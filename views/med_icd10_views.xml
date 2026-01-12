@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <odoo>
+    <!-- ICD-10 Tree View -->
+    <record id="view_med_icd10_tree" model="ir.ui.view">
+        <field name="name">med.icd10.tree</field>
+        <field name="model">med.icd10</field>
+        <field name="arch" type="xml">
+            <tree string="ICD-10 Codes">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ICD-10 Form View -->
+    <record id="view_med_icd10_form" model="ir.ui.view">
+        <field name="name">med.icd10.form</field>
+        <field name="model">med.icd10</field>
+        <field name="arch" type="xml">
+            <form string="ICD-10 Diagnosis">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,8 @@
+<odoo>
+    <record id="seq_med_pharmacy_order" model="ir.sequence">
+        <field name="name">Pharmacy Order</field>
+        <field name="code">med.pharmacy.order</field>
+        <field name="prefix">PHARM/%(year)s/</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

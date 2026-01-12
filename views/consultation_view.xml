@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="view_med_consultation_form" model="ir.ui.view">
+        <field name="name">med.consultation.form</field>
+        <field name="model">med.consultation</field>
+        <field name="arch" type="xml">
+            <form string="Consultation">
+                <header>
+
+                    <!-- Nurse sends to doctor -->
+                    <button name="action_send_to_doctor" type="object"
+                            string="Send to Doctor"
+                            attrs="{'invisible':[('state','!=','nurse')]}"
+                            groups="medisite_clinic.group_med_nurse"/>
+
+                    <!-- Doctor sends to lab -->
+                    <button name="action_send_to_lab" type="object"
+                            string="Send to Lab"
+                            attrs="{'invisible':[('state','!=','doctor')]}"
+                            groups="medisite_clinic.group_med_doctor"/>
+
+                    <!-- Lab sends results to doctor -->
+                    <button name="action_send_to_doctor_from_lab" type="object"
+                            string="Send to Doctor"
+                            attrs="{'invisible':[('state','!=','lab')]}"
+                            groups="medisite_clinic.group_med_lab"/>
+
+                    <!-- Final completion -->
+                    <button name="action_done" type="object"
+                            string="Complete Consultation"
+                            attrs="{'invisible':[('state','!=','doctor')]}"
+                            groups="medisite_clinic.group_med_doctor"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="nurse,doctor,lab,done"/>
+                </header>
+
+                <sheet>
+                    <!-- Header: nurse edits date..employer only -->
+                    <group>
+                        <group>
+                            <field name="patient_id" options="{'no_open': True}"/>
+                            <!-- Nurse-writable fields: date, time, nationality, occupation, employer -->
+                            <field name="date" groups="medisite_clinic.group_med_nurse"/>
+                            <field name="time" groups="medisite_clinic.group_med_nurse"/>
+                            <field name="nationality" groups="medisite_clinic.group_med_nurse"/>
+                            <field name="occupation" groups="medisite_clinic.group_med_nurse"/>
+                            <field name="employer" groups="medisite_clinic.group_med_nurse"/>
+                            <field name="file_number" readonly="1"/>
+                            <field name="patient_name" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <!-- History and main complaint (nurse starts this) -->
+                        <page string="History">
+                            <group>
+                                <field name="main_complaint" groups="medisite_clinic.group_med_nurse"/>
+                                <field name="new_episode" groups="medisite_clinic.group_med_nurse"/>
+                                <field name="recurrent_episode" groups="medisite_clinic.group_med_nurse"/>
+                                <field name="history_details" groups="medisite_clinic.group_med_nurse"/>
+                            </group>
+                            <group>
+                                <field name="female_pregnant" groups="medisite_clinic.group_med_nurse"/>
+                                <field name="grav" groups="medisite_clinic.group_med_nurse"/>
+                                <field name="para" groups="medisite_clinic.group_med_nurse"/>
+                                <field name="lmp_date" groups="medisite_clinic.group_med_nurse"/>
+                                <field name="oral_contraception" groups="medisite_clinic.group_med_nurse"/>
+                            </group>
+                        </page>
+
+                        <!-- Vitals (nurse editable) -->
+                        <page string="Vitals" groups="medisite_clinic.group_med_nurse">
+                            <group>
+                                <field name="weight"/>
+                                <field name="height"/>
+                                <field name="bp"/>
+                                <field name="hr"/>
+                                <field name="temp"/>
+                                <field name="rr"/>
+                                <field name="spo2"/>
+                            </group>
+                        </page>
+
+                        <!-- Labs page: visible/editable to lab tech and doctor (doctor can review) -->
+                        <page string="Lab / Side-room"
+                              groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor">
+                            <group>
+                                <field name="malaria_rdt"
+                                       groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor"/>
+                                <field name="malaria_strain"
+                                       groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor"/>
+                                <field name="blood_glucose"
+                                       groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor"/>
+                            </group>
+                            <group string="Urinalysis"
+                                   groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor">
+                                <field name="urinalysis_sg"/>
+                                <field name="urinalysis_ph"/>
+                                <field name="urinalysis_leu"/>
+                                <field name="urinalysis_nit"/>
+                                <field name="urinalysis_pro"/>
+                                <field name="urinalysis_glu"/>
+                                <field name="urinalysis_ket"/>
+                                <field name="urinalysis_ubg"/>
+                                <field name="urinalysis_bil"/>
+                                <field name="urinalysis_ery"/>
+                            </group>
+                            <group string="Cardiac Markers"
+                                   groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor">
+                                <field name="myoglobin"/>
+                                <field name="ck_mb"/>
+                                <field name="troponin"/>
+                                <field name="ecg"/>
+                            </group>
+                        </page>
+
+                        <!-- Doctor page: only doctors can edit -->
+                        <page string="Doctor Findings" groups="medisite_clinic.group_med_doctor">
+                            <group>
+                                <field name="sys_cns"/>
+                                <field name="sys_eyes"/>
+                                <field name="sys_ent"/>
+                                <field name="sys_cardio"/>
+                                <field name="sys_resp"/>
+                                <field name="sys_gastro"/>
+                                <field name="sys_uro"/>
+                                <field name="sys_musculo"/>
+                                <field name="sys_derm"/>
+                                <field name="sys_other"/>
+                            </group>
+
+                            <group>
+                                <field name="working_diagnosis"/>
+                                <field name="treatment_plan"/>
+                                <field name="investigations"/>
+                                <field name="medication"/>
+                                <field name="other_treatment"/>
+                                <field name="referral_facility"/>
+                                <field name="xray_requested"/>
+                            </group>
+
+                            <group string="Follow-up &amp; Education">
+                                <field name="edu_about_condition"/>
+                                <field name="edu_about_medication"/>
+                                <field name="sick_leave_from"/>
+                                <field name="sick_leave_to"/>
+                                <field name="sick_leave_days"/>
+                                <field name="follow_up_date"/>
+                                <field name="follow_up_results"/>
+                            </group>
+
+                            <group string="Sign Off">
+                                <field name="case_escalation"/>
+                                <field name="treating_hcp_id"/>
+                                <field name="signature" widget="image"/>
+                                <field name="signature_user"/>
+                                <field name="date_signed"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_med_consultation_tree" model="ir.ui.view">
+        <field name="name">med.consultation.tree</field>
+        <field name="model">med.consultation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="patient_name"/>
+                <field name="file_number"/>
+                <field name="date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,44 @@
+.med_ipd_kanban .med_ipd_card {
+    border-radius: 10px;
+    padding: 12px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: 0.2s;
+}
+
+.med_ipd_kanban .med_ipd_card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.med_ipd_header {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #003366;
+}
+
+.med_ipd_ref {
+    display: block;
+    font-size: 11px;
+    color: #666;
+}
+
+.med_ipd_bed {
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+.med_ipd_status {
+    margin-top: 10px;
+}
+
+.med_ipd_date {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #888;
+}
+.med_sep {
+    margin: 0 6px;
+    color: #999;
+}

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- =========================
+         PATIENT FORM
+    ========================== -->
+    <record id="view_med_patient_form" model="ir.ui.view">
+        <field name="name">med.patient.form</field>
+        <field name="model">med.patient</field>
+        <field name="arch" type="xml">
+            <form string="Patient">
+                <sheet>
+
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+
+                    <!-- Patient Header -->
+                    <group col="2">
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="file_number"/>
+                            <field name="dob"/>
+                            <field name="age" readonly="1"/>
+                            <field name="gender"/>
+                            <field name="nationality"/>
+                            <field name="occupation"/>
+                            <field name="employer"/>
+                        </group>
+
+                        <group>
+                            <field name="photo"
+                                   widget="image"
+                                   class="oe_avatar"
+                                   options="{'size':[180,180]}"/>
+                        </group>
+                    </group>
+
+                    <!-- Tabs -->
+                    <notebook>
+
+                        <!-- CONSULTATIONS -->
+                        <page string="Consultations">
+                            <field name="consultation_ids" nolabel="1">
+                                <tree>
+                                    <field name="date"/>
+                                    <field name="patient_name"/>
+                                    <field name="state"/>
+                                    <field name="treating_hcp_id"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- IPD -->
+                        <page string="IPD Admissions">
+                            <field name="ipd_ids" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="admission_date"/>
+                                    <field name="discharge_date"/>
+                                    <field name="room_number"/>
+                                    <field name="bed_number"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- =========================
+         PATIENT LIST
+    ========================== -->
+    <record id="view_med_patient_tree" model="ir.ui.view">
+        <field name="name">med.patient.tree</field>
+        <field name="model">med.patient</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="photo"
+                       widget="image"
+                       class="oe_avatar o_list_avatar"
+                       options="{'size': [32, 32]}"/>
+
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="file_number"/>
+                <field name="age"/>
+                <field name="gender"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

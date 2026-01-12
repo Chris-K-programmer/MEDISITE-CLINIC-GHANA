@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <!-- Actions MUST come first -->
+    <record id="action_med_staff" model="ir.actions.act_window">
+        <field name="name">Staff</field>
+        <field name="res_model">med.staff</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_med_patient" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="res_model">med.patient</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_med_consultation" model="ir.actions.act_window">
+        <field name="name">Consultations</field>
+        <field name="res_model">med.consultation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_med_pharmacy_stock_move" model="ir.actions.act_window">
+        <field name="name">Stock Movements</field>
+        <field name="res_model">med.pharmacy.stock.move</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_med_ipd" model="ir.actions.act_window">
+        <field name="name">IPD Admissions</field>
+        <field name="res_model">med.ipd</field>
+        <field name="view_mode">kanban,tree,form</field>
+
+    </record>
+
+    <record id="action_med_icd10" model="ir.actions.act_window">
+        <field name="name">ICD-10 Codes</field>
+        <field name="res_model">med.icd10</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Manage ICD-10 diagnosis codes here.
+            </p>
+        </field>
+    </record>
+
+
+
+    <!-- Root Menu -->
+    <menuitem id="medisite_root" name="Medisite Clinic" sequence="1"/>
+
+    <!-- Submenus (Now referencing actions already defined) -->
+    <menuitem id="menu_med_patient"
+              name="Patients"
+              parent="medisite_root"
+              action="action_med_patient"/>
+
+    <menuitem id="menu_med_consultation"
+              name="Consultations"
+              parent="medisite_root"
+              action="action_med_consultation"/>
+
+    <menuitem id="menu_med_staff"
+              name="Staff"
+              parent="medisite_root"
+              action="action_med_staff"/>
+
+        <menuitem id="menu_med_ipd" name="IPD Admissions"
+          parent="medisite_root" action="action_med_ipd"/>
+
+
+    <!-- Root menu for Pharmacy (if not exists) -->
+    <menuitem id="menu_med_pharmacy" name="Pharmacy" parent="medisite_root"/>
+
+    <!-- Submenu: Drugs (already exists) -->
+    <menuitem id="menu_med_pharmacy_products"
+              name="Drugs"
+              parent="menu_med_pharmacy"
+              action="action_med_pharmacy_product"/>
+
+    <!-- Submenu: Orders -->
+    <menuitem id="menu_med_pharmacy_orders"
+              name="Orders"
+              parent="menu_med_pharmacy"
+              action="action_med_pharmacy_order"/>
+
+    <menuitem id="menu_med_pharmacy_stock_move"
+              name="Stock Movements"
+              parent="menu_med_pharmacy"
+              action="action_med_pharmacy_stock_move"/>
+
+     <!-- =====================================================
+         ICD-10 Menu
+    ====================================================== -->
+    <menuitem id="menu_med_setup"
+              name="Setup"
+              parent="medisite_root"
+              sequence="50"/>
+
+    <menuitem id="menu_med_icd10"
+              name="ICD-10 Codes"
+              parent="menu_med_setup"
+              action="action_med_icd10"
+              groups="medisite_clinic.group_med_admin"
+              sequence="10"/>
+
+
+
+
+</odoo>

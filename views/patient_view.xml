@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<odoo>
+  <record id="view_med_patient_form" model="ir.ui.view">
+    <field name="name">med.patient.form</field>
+    <field name="model">med.patient</field>
+    <field name="arch" type="xml">
+      <form string="Patient">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="file_number"/>
+            <field name="dob"/>
+            <field name="age" readonly="1"/>
+            <field name="gender"/>
+            <field name="nationality"/>
+            <field name="occupation"/>
+            <field name="employer"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_med_patient_tree" model="ir.ui.view">
+    <field name="name">med.patient.tree</field>
+    <field name="model">med.patient</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="file_number"/>
+        <field name="age"/>
+        <field name="gender"/>
+      </tree>
+    </field>
+  </record>
+</odoo>

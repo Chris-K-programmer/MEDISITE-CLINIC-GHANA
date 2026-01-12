@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================
+         IPD FORM
+    ============================ -->
+    <record id="view_med_ipd_form" model="ir.ui.view">
+        <field name="name">med.ipd.form</field>
+        <field name="model">med.ipd</field>
+        <field name="arch" type="xml">
+            <form string="IPD Admission">
+                <sheet>
+
+                    <!-- HEADER -->
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="patient_id"/>
+                        <field name="consultation_id"/>
+                        <field name="admission_date"/>
+                        <field name="discharge_date"/>
+                        <field name="room_number"/>
+                        <field name="bed_number"/>
+                        <field name="state" readonly="1"/>
+                    </group>
+
+                    <group>
+                        <field name="reason"/>
+                        <field name="notes"/>
+                    </group>
+
+                    <!-- NOTEBOOK (EXTENSION) -->
+                    <notebook>
+
+                        <!-- ========== NURSE NOTES ========== -->
+                        <page string="Nurse Notes">
+                            <field name="note_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="nurse_id"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- ========== DOCTOR WARD ROUNDS ========== -->
+                        <page string="Ward Rounds">
+                            <field name="round_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="doctor_id"/>
+                                    <field name="assessment"/>
+                                    <field name="plan"/>
+                                    <field name="instructions"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                    </notebook>
+
+                    <!-- FOOTER -->
+                    <footer>
+                        <button string="Admit"
+                                type="object"
+                                name="action_admit"
+                                attrs="{'invisible': [('state','!=','draft')]}"
+                                class="btn-primary"/>
+
+                        <button string="Discharge"
+                                type="object"
+                                name="action_discharge"
+                                attrs="{'invisible': [('state','!=','admitted')]}"
+                                class="btn-success"/>
+                    </footer>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================
+         IPD TREE
+    ============================ -->
+    <record id="view_med_ipd_tree" model="ir.ui.view">
+        <field name="name">med.ipd.tree</field>
+        <field name="model">med.ipd</field>
+        <field name="arch" type="xml">
+            <tree string="IPD Admissions">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="admission_date"/>
+                <field name="discharge_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_med_ipd_kanban" model="ir.ui.view">
+        <field name="name">med.ipd.kanban</field>
+        <field name="model">med.ipd</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state"
+                    class="o_kanban_small_column med_ipd_kanban">
+
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="room_number"/>
+                <field name="bed_number"/>
+                <field name="admission_date"/>
+                <field name="state"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record med_ipd_card">
+
+
+                            <!-- Header -->
+                            <div class="med_ipd_header">
+                                <strong>
+                                    <field name="patient_id"/>
+                                </strong>
+                                <span class="med_ipd_ref">
+                                    <field name="name"/>
+                                </span>
+                            </div>
+
+                            <!-- Bed info -->
+                            <div class="med_ipd_bed">
+                                <span>Room:</span>
+                                <strong>
+                                    <field name="room_number"/>
+                                </strong>
+                                <span class="med_sep">|</span>
+                                <span>Bed:</span>
+                                <strong>
+                                    <field name="bed_number"/>
+                                </strong>
+                            </div>
+
+                            <!-- Status badge -->
+                            <div class="med_ipd_status">
+                                <t t-if="record.state.raw_value == 'draft'">
+                                    <span class="badge badge-warning">Waiting</span>
+                                </t>
+                                <t t-if="record.state.raw_value == 'admitted'">
+                                    <span class="badge badge-primary">Admitted</span>
+                                </t>
+                                <t t-if="record.state.raw_value == 'discharged'">
+                                    <span class="badge badge-success">Discharged</span>
+                                </t>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="med_ipd_date">
+                                Admitted:
+                                <field name="admission_date"/>
+                            </div>
+
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+</odoo>

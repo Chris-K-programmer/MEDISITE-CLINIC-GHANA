@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ================= PHARMACY ORDER FORM ================= -->
+    <record id="view_med_pharmacy_order_form" model="ir.ui.view">
+        <field name="name">med.pharmacy.order.form</field>
+        <field name="model">med.pharmacy.order</field>
+        <field name="arch" type="xml">
+            <form string="Pharmacy Order">
+
+                <!-- ================= HEADER ================= -->
+                <header>
+                    <button name="action_dispense"
+                            type="object"
+                            string="Dispense"
+                            states="draft"
+                            class="btn-primary"/>
+
+                    <button name="action_mark_paid"
+                            type="object"
+                            string="Mark Paid"
+                            states="dispensed"
+                            class="btn-success"/>
+
+                    <field name="state" widget="statusbar"/>
+                </header>
+
+                <!-- ================= BODY ================= -->
+                <sheet>
+                    <group>
+                        <field name="consultation_id" readonly="1"/>
+                        <field name="patient_id" readonly="1"/>
+                        <field name="pharmacist_id" readonly="1"/>
+                    </group>
+
+                    <field name="line_ids" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                            <field name="unit_price"/>
+                            <field name="subtotal" readonly="1"/>
+                        </tree>
+                    </field>
+
+                    <group>
+                        <field name="amount_total" readonly="1"/>
+                    </group>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- ================= PHARMACY ORDER TREE ================= -->
+    <record id="view_med_pharmacy_order_tree" model="ir.ui.view">
+        <field name="name">med.pharmacy.order.tree</field>
+        <field name="model">med.pharmacy.order</field>
+        <field name="arch" type="xml">
+            <tree string="Pharmacy Orders">
+                <field name="name"/>
+                <field name="consultation_id"/>
+                <field name="patient_id"/>
+                <field name="pharmacist_id"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

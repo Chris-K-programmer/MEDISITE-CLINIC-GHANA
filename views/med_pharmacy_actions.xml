@@ -1,0 +1,22 @@
+<odoo>
+
+    <!-- Drug Master Action -->
+    <record id="action_med_pharmacy_product" model="ir.actions.act_window">
+        <field name="name">Drugs</field>
+        <field name="res_model">med.pharmacy.product</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Pharmacy Orders Action -->
+<record id="action_med_pharmacy_order" model="ir.actions.act_window">
+    <field name="name">Pharmacy Orders</field>
+    <field name="res_model">med.pharmacy.order</field>
+    <field name="view_mode">tree,form</field>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Create a new pharmacy order here.
+        </p>
+    </field>
+</record>
+
+</odoo>

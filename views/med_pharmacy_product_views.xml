@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ================= FORM VIEW ================= -->
+    <record id="view_med_pharmacy_product_form" model="ir.ui.view">
+        <field name="name">med.pharmacy.product.form</field>
+        <field name="model">med.pharmacy.product</field>
+        <field name="arch" type="xml">
+            <form string="Pharmacy Product">
+                <sheet>
+                    <group>
+                        <group string="Product Information">
+                            <field name="name"/>
+                            <field name="strength"/>
+                            <field name="form"/>
+                            <field name="active"/>
+                        </group>
+
+                        <group string="Pricing &amp; Stock">
+                            <field name="unit_price"/>
+                            <field name="qty_available"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================= TREE VIEW ================= -->
+    <record id="view_med_pharmacy_product_tree" model="ir.ui.view">
+        <field name="name">med.pharmacy.product.tree</field>
+        <field name="model">med.pharmacy.product</field>
+        <field name="arch" type="xml">
+            <tree string="Pharmacy Products">
+                <field name="name"/>
+                <field name="strength"/>
+                <field name="form"/>
+                <field name="qty_available"/>
+                <field name="unit_price"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

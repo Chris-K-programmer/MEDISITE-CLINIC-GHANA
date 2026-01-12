@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_med_pharmacy_stock_move_tree" model="ir.ui.view">
+        <field name="name">med.pharmacy.stock.move.tree</field>
+        <field name="model">med.pharmacy.stock.move</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Movements">
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="move_type"/>
+                <field name="patient_id"/>
+                <field name="user_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_med_pharmacy_stock_move_form" model="ir.ui.view">
+        <field name="name">med.pharmacy.stock.move.form</field>
+        <field name="model">med.pharmacy.stock.move</field>
+        <field name="arch" type="xml">
+            <form string="Stock Movement">
+                <sheet>
+                    <group>
+                        <field name="date"/>
+                        <field name="product_id"/>
+                        <field name="quantity"/>
+                        <field name="move_type"/>
+                        <field name="patient_id"/>
+                        <field name="order_id"/>
+                        <field name="user_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

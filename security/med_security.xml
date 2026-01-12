@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="group_med_nurse" model="res.groups">
+        <field name="name">Medisite Nurse</field>
+    </record>
+
+    <record id="group_med_lab" model="res.groups">
+        <field name="name">Medisite Lab Technician</field>
+    </record>
+
+    <record id="group_med_doctor" model="res.groups">
+        <field name="name">Medisite Doctor</field>
+    </record>
+
+    <record id="group_med_admin" model="res.groups">
+        <field name="name">Medisite Admin</field>
+        <field name="category_id" ref="base.module_category_administration"/>
+    </record>
+
+    <record id="group_med_pharmacy" model="res.groups">
+        <field name="name">Medisite Pharmacy</field>
+        <field name="category_id" ref="base.module_category_administration"/>
+    </record>
+
+
+</odoo>
+
+

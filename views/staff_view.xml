@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_med_staff_form" model="ir.ui.view">
+        <field name="name">med.staff.form</field>
+        <field name="model">med.staff</field>
+        <field name="arch" type="xml">
+            <form string="Medical Staff">
+                <sheet>
+
+                    <!-- TITLE -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Full Name"/>
+                        </h1>
+                    </div>
+
+                    <!-- TOP SECTION -->
+                    <group col="4">
+                        <!-- LEFT: Core Details -->
+                        <group col="2">
+                            <field name="employee_id"/>
+                            <field name="role"/>
+                            <field name="job_title"/>
+                            <field name="department"/>
+                            <field name="user_id"/>
+                        </group>
+
+                        <!-- RIGHT: IMAGE -->
+                        <group>
+                            <field name="image"
+                                   widget="image"
+                                   class="oe_avatar"
+                                   options="{'preview_image': 'image'}"/>
+                        </group>
+                    </group>
+
+                    <!-- DETAILS -->
+                    <notebook>
+
+                        <!-- CONTACT -->
+                        <page string="Contact Information">
+                            <group col="2">
+                                <field name="phone"/>
+                                <field name="email"/>
+                            </group>
+                        </page>
+
+                        <!-- SYSTEM ACCESS -->
+                        <page string="System Access">
+                            <group>
+                                <field name="user_id"
+                                       options="{'no_create': True}"
+                                       help="Linked system user account"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <button name="action_create_user"
+        type="object"
+        string="Create Login"
+        class="btn-primary"
+        attrs="{'invisible':[('user_id','!=',False)]}"/>
+
+
+</odoo>

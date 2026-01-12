@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- =====================================================
+         CONSULTATION FORM VIEW
+    ====================================================== -->
+    <record id="view_med_consultation_form" model="ir.ui.view">
+        <field name="name">med.consultation.form</field>
+        <field name="model">med.consultation</field>
+        <field name="arch" type="xml">
+            <form string="Medical Consultation">
+
+                <!-- ================= HEADER ================= -->
+                <header>
+
+                    <button name="create_ipd" string="Admit to IPD" type="object"
+                            class="btn-primary" attrs="{'invisible':[('ipd_id','!=',False)]}"/>
+                    <field name="ipd_id" invisible="1"/>
+
+
+                    <!-- Nurse → Doctor -->
+                    <button name="action_send_to_doctor"
+                            type="object"
+                            string="Send to Doctor"
+                            class="btn-primary"
+                            groups="medisite_clinic.group_med_nurse"
+                            attrs="{'invisible':[('state','!=','nurse')]}"/>
+
+                    <!-- Doctor → Lab -->
+                    <button name="action_send_to_lab"
+                            type="object"
+                            string="Send to Lab"
+                            class="btn-primary"
+                            groups="medisite_clinic.group_med_doctor"
+                            attrs="{'invisible':[('state','!=','doctor')]}"/>
+
+                    <!-- Lab → Doctor -->
+                    <button name="action_send_to_doctor_from_lab"
+                            type="object"
+                            string="Return to Doctor"
+                            class="btn-primary"
+                            groups="medisite_clinic.group_med_lab"
+                            attrs="{'invisible':[('state','!=','lab')]}"/>
+
+                    <!-- Doctor completes -->
+                    <button name="action_done"
+                            type="object"
+                            string="Complete Consultation"
+                            class="btn-success"
+                            groups="medisite_clinic.group_med_doctor"
+                            attrs="{'invisible':[('state','!=','doctor')]}"/>
+
+                    <button name="action_send_to_pharmacy"
+                            type="object"
+                            string="Send to Pharmacy"
+                            class="btn-primary"
+                            groups="medisite_clinic.group_med_doctor"
+                            attrs="{'invisible':[('state','!=','done')]}"/>
+
+
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="nurse,doctor,lab,done"/>
+
+                </header>
+
+                <!-- ================= BODY ================= -->
+                <sheet>
+
+                    <group string="Pharmacy" groups="medisite_clinic.group_med_doctor,medisite_clinic.group_med_admin">
+                        <field name="pharmacy_order_id" readonly="1"/>
+                    </group>
+
+
+                    <!-- ========== PATIENT HEADER ========== -->
+                    <group>
+                        <group>
+                            <field name="patient_id" options="{'no_open': True}"/>
+                            <field name="file_number" readonly="1"/>
+                            <field name="patient_name" readonly="1"/>
+                        </group>
+
+                        <group>
+                            <field name="date"
+                                   readonly="1"
+                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
+                            <field name="time"
+                                   readonly="1"
+                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
+                            <field name="nationality"
+                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
+                            <field name="occupation"
+                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
+                            <field name="employer"
+                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
+                        </group>
+                    </group>
+
+                    <!-- ========== NOTEBOOK ========== -->
+                    <notebook>
+                        <!-- ================= PREVIOUS CONSULTATIONS ================= -->
+                        <page string="Previous Consultations"
+                              groups="medisite_clinic.group_med_doctor,medisite_clinic.group_med_admin">
+
+                            <field name="previous_consultation_ids" readonly="1">
+                                <tree>
+                                    <field name="date"/>
+                                    <field name="working_diagnosis"/>
+                                    <field name="treatment_plan"/>
+                                    <field name="state"/>
+                                    <field name="treating_hcp_id"/>
+                                </tree>
+                            </field>
+
+                        </page>
+
+                        <page string="Audit Trail"
+                              groups="medisite_clinic.group_med_admin,medisite_clinic.group_med_doctor">
+                            <field name="audit_ids" readonly="1">
+                                <tree>
+                                    <field name="create_date"/>
+                                    <field name="user_id"/>
+                                    <field name="role"/>
+                                    <field name="action"/>
+                                    <field name="field_name"/>
+                                    <field name="old_value"/>
+                                    <field name="new_value"/>
+                                </tree>
+                            </field>
+                        </page>
+
+
+                        <!-- ================= HISTORY ================= -->
+                        <page string="History" groups="medisite_clinic.group_med_nurse">
+                            <group>
+                                <field name="main_complaint"/>
+                                <field name="new_episode"/>
+                                <field name="recurrent_episode"/>
+                                <field name="history_details"/>
+                            </group>
+                            <group>
+                                <field name="female_pregnant"/>
+                                <field name="grav"/>
+                                <field name="para"/>
+                                <field name="lmp_date"/>
+                                <field name="oral_contraception"/>
+                            </group>
+                            <group>
+                                <field name="past_medical_history"/>
+                                <field name="allergies"/>
+                                <field name="family_history"/>
+                                <field name="travel_vacc_history"/>
+                            </group>
+                        </page>
+
+                        <!-- ================= VITAL SIGNS ================= -->
+                        <page string="Vitals" groups="medisite_clinic.group_med_nurse">
+                            <group>
+                                <field name="weight"/>
+                                <field name="height"/>
+                                <field name="bp"/>
+                                <field name="hr"/>
+                                <field name="temp"/>
+                                <field name="rr"/>
+                                <field name="spo2"/>
+                            </group>
+                            <!-- Triage Note -->
+                            <group string="Triage Note" colspan="2">
+                                <field name="triage_note"
+                                       placeholder="Enter triage notes here..."
+                                       nolabel="1"
+                                       widget="text"
+                                       class="o_input_full"
+                                       options="{'rows': 6}"/>
+                            </group>
+                        </page>
+
+                        <!-- ================= LAB / SIDE ROOM ================= -->
+                        <page string="Lab / Side Room"
+                              groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor">
+                            <group>
+                                <field name="malaria_rdt"
+                                       attrs="{'readonly':[('state','!=','lab')]}"/>
+                                <field name="malaria_strain"
+                                       attrs="{'readonly':[('state','!=','lab')]}"/>
+                                <field name="blood_glucose"
+                                       attrs="{'readonly':[('state','!=','lab')]}"/>
+                            </group>
+
+                            <group string="Urinalysis">
+                                <field name="urinalysis_sg"/>
+                                <field name="urinalysis_ph"/>
+                                <field name="urinalysis_leu"/>
+                                <field name="urinalysis_nit"/>
+                                <field name="urinalysis_pro"/>
+                                <field name="urinalysis_glu"/>
+                                <field name="urinalysis_ket"/>
+                                <field name="urinalysis_ubg"/>
+                                <field name="urinalysis_bil"/>
+                                <field name="urinalysis_ery"/>
+                            </group>
+
+                            <group string="Cardiac Markers">
+                                <field name="myoglobin"/>
+                                <field name="ck_mb"/>
+                                <field name="troponin"/>
+                                <field name="ecg"/>
+                                <field name="other_side_room"/>
+                            </group>
+                        </page>
+
+                        <!-- ================= DOCTOR ================= -->
+                        <page string="Doctor Assessment" groups="medisite_clinic.group_med_doctor">
+
+
+                            <group>
+                                <field name="sys_cns"/>
+                                <field name="sys_eyes"/>
+                                <field name="sys_ent"/>
+                                <field name="sys_cardio"/>
+                                <field name="sys_resp"/>
+                                <field name="sys_gastro"/>
+                                <field name="sys_uro"/>
+                                <field name="sys_musculo"/>
+                                <field name="sys_derm"/>
+                                <field name="sys_other"/>
+                            </group>
+
+                            <group string="Clinical Decision">
+                                <field name="working_diagnosis"/>
+                                <field name="icd10_id" options="{'no_create': False}" placeholder="Select ICD-10 Code"/>
+                                <field name="investigations"/>
+                            </group>
+
+                            <group string="Prescription (Drugs)">
+                                <field name="medication"
+                                       placeholder="Enter one drug per line. Example:
+Paracetamol 500mg
+Amoxicillin 250mg
+Vitamin C"
+                                       nolabel="1"/>
+                            </group>
+
+                            <group string="Treatment Plan">
+                                <field name="treatment_plan"/>
+                                <field name="other_treatment"/>
+                                <field name="xray_requested"/>
+                                <field name="referral_facility"/>
+                            </group>
+
+                            <group string="External Hospital Documents">
+                                <field name="external_document_ids"
+                                       widget="many2many_binary"
+                                       options="{'accepted_file_extensions': '.pdf,.jpg,.png'}"/>
+                            </group>
+
+
+                            <group string="Follow-up">
+                                <field name="edu_about_condition"/>
+                                <field name="edu_about_medication"/>
+                                <field name="sick_leave_from"/>
+                                <field name="sick_leave_to"/>
+                                <field name="sick_leave_days"/>
+                                <field name="follow_up_date"/>
+                                <field name="follow_up_results"/>
+                            </group>
+
+                            <group string="Sign Off">
+                                <field name="case_escalation"/>
+                                <field name="treating_hcp_id"/>
+                                <field name="signature" widget="image"/>
+                                <field name="signature_user" readonly="1"/>
+                                <field name="date_signed" readonly="1"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         TREE VIEW
+    ====================================================== -->
+    <record id="view_med_consultation_tree" model="ir.ui.view">
+        <field name="name">med.consultation.tree</field>
+        <field name="model">med.consultation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="patient_name"/>
+                <field name="file_number"/>
+                <field name="date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

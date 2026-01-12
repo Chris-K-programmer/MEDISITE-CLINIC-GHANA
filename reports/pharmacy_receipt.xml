@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Report Action -->
+    <report
+        id="report_pharmacy_receipt"
+        model="med.pharmacy.order"
+        string="Pharmacy Receipt"
+        report_type="qweb-pdf"
+        name="medisite_clinic.report_pharmacy_receipt"
+        file="medisite_clinic.report_pharmacy_receipt"
+        print_report_name="'Pharmacy_Receipt_%s' % (object.name)"
+    />
+
+    <!-- QWeb Template -->
+    <template id="report_pharmacy_receipt">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <h2>Pharmacy Receipt</h2>
+                    <p><strong>Order:</strong> <t t-esc="doc.name"/></p>
+                    <p><strong>Patient:</strong> <t t-esc="doc.patient_id.name"/></p>
+                    <p><strong>Pharmacist:</strong> <t t-esc="doc.pharmacist_id.name or 'N/A'"/></p>
+                    <p><strong>Date:</strong> <t t-esc="doc.create_date"/></p>
+
+                    <table class="table table-sm mt16">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.line_ids" t-as="line">
+                                <tr>
+                                    <td><t t-esc="line.product_id.name"/></td>
+                                    <td><t t-esc="line.quantity"/></td>
+                                    <td><t t-esc="line.unit_price"/></td>
+                                    <td><t t-esc="line.subtotal"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Total:</strong></td>
+                                <td><t t-esc="doc.amount_total"/></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

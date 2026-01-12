@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="seq_med_ipd" model="ir.sequence">
+            <field name="name">IPD Admission Sequence</field>
+            <field name="code">med.ipd</field>
+            <field name="prefix">IPD/</field>
+            <field name="padding">4</field>
+            <field name="implementation">no_gap</field>
+        </record>
+
+
+    </data>
+</odoo>
