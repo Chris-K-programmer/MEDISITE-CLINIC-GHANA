@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- No explicit search view needed; relying on Action domain and Kanban grouping -->
+
+    <!-- KANBAN VIEW -->
+    <record id="view_med_pharmacy_batch_kanban" model="ir.ui.view">
+        <field name="name">med.pharmacy.batch.kanban</field>
+        <field name="model">med.pharmacy.batch</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="product_id" class="o_kanban_mobile med_batch_kanban">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="expiry_date"/>
+                <field name="is_expired"/>
+                <field name="is_expiring_soon"/>
+                <field name="active"/>
+                
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="oe_kanban_global_click med_batch_card {{ record.is_expired.raw_value ? 'border-danger' : (record.is_expiring_soon.raw_value ? 'border-warning' : 'border-success') }}" style="border-left-width: 6px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px; background: #fff; margin-bottom: 10px;">
+                            
+                            <!-- Header -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <strong class="o_kanban_record_title" style="font-size: 1.15em; color: #1e293b;">
+                                    <field name="product_id"/>
+                                </strong>
+                                <span class="badge rounded-pill text-bg-light border px-2 py-1 text-muted">
+                                    <field name="name"/>
+                                </span>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="o_kanban_record_body mt-3">
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fa fa-calendar-times-o me-2" style="font-size: 1.2em; width: 20px; text-align: center; color: #94a3b8;"/> 
+                                    <span t-attf-class="fw-bold {{ record.is_expired.raw_value ? 'text-danger' : (record.is_expiring_soon.raw_value ? 'text-warning' : 'text-success') }}" style="font-size: 0.95em;">
+                                        Expires: <field name="expiry_date" widget="date"/>
+                                        <t t-if="record.is_expired.raw_value">
+                                            <span class="badge bg-danger ms-2">EXPIRED</span>
+                                        </t>
+                                        <t t-elif="record.is_expiring_soon.raw_value">
+                                            <span class="badge bg-warning text-dark ms-2">SOON</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-success ms-2">SAFE</span>
+                                        </t>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+</odoo>

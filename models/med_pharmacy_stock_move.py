@@ -11,6 +11,9 @@ class MedPharmacyStockMove(models.Model):
         string='Drug',
         required=True
     )
+    
+    batch_id = fields.Many2one('med.pharmacy.batch', string='Batch')
+    source_location_id = fields.Many2one('med.pharmacy.location', string='Location Issued From')
 
     order_id = fields.Many2one(
         'med.pharmacy.order',

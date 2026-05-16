@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_patient_history" model="ir.actions.report">
+        <field name="name">Patient History</field>
+        <field name="model">med.patient</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">medisite_clinic.report_patient_history</field>
+        <field name="report_file">medisite_clinic.report_patient_history</field>
+        <field name="print_report_name">'Patient History - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_med_patient"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Report Template -->
+    <template id="report_patient_history">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <h2 class="text-center mt-4 mb-4">Patient Medical History</h2>
+                        
+                        <!-- Demographics -->
+                        <div class="row mt32 mb32 border p-3 bg-light">
+                            <div class="col-6">
+                                <strong>Patient Name:</strong> <span t-field="doc.name"/><br/>
+                                <strong>File/ID Number:</strong> <span t-field="doc.file_number"/><br/>
+                                <strong>Gender:</strong> <span t-field="doc.gender"/><br/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Date of Birth:</strong> <span t-field="doc.dob"/><br/>
+                                <strong>Age:</strong> <span t-field="doc.age"/> years<br/>
+                            </div>
+                        </div>
+
+                        <!-- Consultation History -->
+                        <h3 class="mt-4 border-bottom pb-2">Consultation History</h3>
+                        <table class="table table-sm table-striped mt-3">
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Doctor/HCP</th>
+                                    <th>Diagnosis</th>
+                                    <th>Treatment Plan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="not doc.consultation_ids">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No consultations recorded.</td>
+                                    </tr>
+                                </t>
+                                <t t-foreach="doc.consultation_ids" t-as="cons">
+                                    <tr>
+                                        <td><span t-field="cons.date" t-options='{"widget": "date"}'/></td>
+                                        <td><span t-field="cons.treating_hcp_id.name"/></td>
+                                        <td><span t-field="cons.working_diagnosis"/></td>
+                                        <td><span t-field="cons.treatment_plan"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

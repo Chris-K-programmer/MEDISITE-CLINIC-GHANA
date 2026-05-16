@@ -21,6 +21,12 @@ class MedPharmacyOrder(models.Model):
         ('dispensed', 'Dispensed'),
         ('paid', 'Paid'),
     ], default='draft', tracking=True)
+    invoice_id = fields.Many2one('account.move', string='Invoice', readonly=True, copy=False)
+    invoice_count = fields.Integer(compute='_compute_invoice_count')
+
+    def _compute_invoice_count(self):
+        for rec in self:
+            rec.invoice_count = 1 if rec.invoice_id else 0
 
     @api.depends('line_ids.subtotal')
     def _compute_amount_total(self):
@@ -38,45 +44,100 @@ class MedPharmacyOrder(models.Model):
                 raise UserError("Add at least one product to dispense.")
 
             for line in order.line_ids:
-                product = line.product_id
-                if product.qty_available < line.quantity:
-                    raise UserError(
-                        f"Insufficient stock for {product.name}. "
-                        f"Available: {product.qty_available}"
-                    )
+                if not line.batch_id or not line.location_id:
+                    raise UserError(f"Please specify Batch and Location to dispense {line.product_id.name}.")
 
-            # Deduct stock + log movement
-            for line in order.line_ids:
-                product = line.product_id
+                stock = self.env['med.pharmacy.stock'].search([
+                    ('product_id', '=', line.product_id.id),
+                    ('batch_id', '=', line.batch_id.id),
+                    ('location_id', '=', line.location_id.id)
+                ], limit=1)
 
-                # Deduct
-                product.qty_available -= line.quantity
+                if not stock or stock.quantity < line.quantity:
+                    raise UserError(f"Insufficient stock for {line.product_id.name} in the selected Batch/Location.")
+
+                stock.quantity -= line.quantity
 
                 # Log movement
                 self.env['med.pharmacy.stock.move'].create({
-                    'product_id': product.id,
+                    'product_id': line.product_id.id,
+                    'batch_id': line.batch_id.id,
+                    'source_location_id': line.location_id.id,
                     'order_id': order.id,
                     'patient_id': order.patient_id.id,
                     'quantity': line.quantity,
                     'move_type': 'out',
                 })
 
-            order.state = 'dispensed'
-            order.pharmacist_id = self.env['med.staff'].search(
+            pharmacist = self.env['med.staff'].search(
                 [('user_id', '=', self.env.user.id)],
                 limit=1
             )
+            order.write({
+                'state': 'dispensed',
+                'pharmacist_id': pharmacist.id if pharmacist else False,
+            })
+            
+            # Notify Patient/Nurse that Prescription is ready
+            group_nurse = self.env.ref('medisite_clinic.group_med_nurse')
+            self.env['bus.bus']._sendone(group_nurse, 'medisite_notification', {
+                'role': 'pharmacy',
+                'patient_name': order.patient_id.name,
+                'message': f"Prescription for {order.patient_id.name} has been dispensed and is ready for collection."
+            })
 
     def action_mark_paid(self):
         for order in self:
             if order.state != 'dispensed':
                 raise UserError("Only dispensed orders can be marked paid.")
+            if order.invoice_id and order.invoice_id.payment_state != 'paid':
+                raise UserError("Please register payment on the linked invoice first.")
             order.state = 'paid'
+
+    def action_create_invoice(self):
+        self.ensure_one()
+        if self.invoice_id:
+            return self.action_view_invoice()
+
+        if not self.patient_id.partner_id:
+            self.patient_id._ensure_partner()
+
+        invoice_line_vals = []
+        for line in self.line_ids:
+            invoice_line_vals.append((0, 0, {
+                'name': f"{line.product_id.name} (Batch: {line.batch_id.name if line.batch_id else 'N/A'})",
+                'quantity': line.quantity,
+                'price_unit': line.unit_price,
+            }))
+
+        invoice_vals = {
+            'move_type': 'out_invoice',
+            'partner_id': self.patient_id.partner_id.id,
+            'invoice_origin': self.name,
+            'invoice_line_ids': invoice_line_vals,
+        }
+        invoice = self.env['account.move'].create(invoice_vals)
+        self.with_context(skip_lock=True).invoice_id = invoice.id
+        return self.action_view_invoice()
+
+    def action_view_invoice(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Invoice',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.invoice_id.id,
+            'target': 'current',
+        }
 
 
     def write(self, vals):
+        # Allow state changes and invoice linking even on locked records
+        if any(field in vals for field in ('state', 'invoice_id')):
+            return super().write(vals)
+
         for order in self:
-            if order.state in ('dispensed', 'paid'):
+            if order.state in ('dispensed', 'paid') and not self._context.get('skip_lock'):
                 forbidden_fields = {
                     'consultation_id',
                     'line_ids',
@@ -111,6 +172,9 @@ class MedPharmacyOrderLine(models.Model):
 
     order_id = fields.Many2one('med.pharmacy.order', string='Order', required=True, ondelete='cascade')
     product_id = fields.Many2one('med.pharmacy.product', string='Product', required=True)
+    batch_id = fields.Many2one('med.pharmacy.batch', string='Batch', domain="[('product_id', '=', product_id)]")
+    location_id = fields.Many2one('med.pharmacy.location', string='Storage Location')
+    
     quantity = fields.Float(string='Quantity', required=True, default=1.0)
     unit_price = fields.Float(string='Unit Price', related='product_id.unit_price', store=True, readonly=True)
     subtotal = fields.Float(string='Subtotal', compute='_compute_subtotal', store=True)

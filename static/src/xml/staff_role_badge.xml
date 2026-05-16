@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="medisite_clinic.StaffRoleBadge" owl="1">
+        <span t-attf-class="badge rounded-pill fs-6 px-3 py-2 shadow-sm {{ roleColorClass }}">
+            <t t-esc="roleLabel"/>
+        </span>
+    </t>
+</templates>

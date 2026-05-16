@@ -6,6 +6,40 @@ It will be **continuously updated** as development progresses. Each change shoul
 
 ---
 
+## 📋 Project Overview
+
+**MediSite Clinic** is a comprehensive, Ghana-focused healthcare management system built as a custom Odoo 19 module by **MediSite Services Ghana**. The platform digitises the end-to-end clinical workflow of a medical centre — from patient registration and triage through doctor consultation, laboratory investigations, pharmacy dispensing, in-patient department (IPD) admissions, and financial reporting.
+
+The system is designed around the realities of Ghanaian healthcare delivery. It supports role-based access for nurses, doctors, laboratory technicians, pharmacy staff, and administrators. Workflow-triggered bus notifications (with Text-to-Speech voice alerts) ensure that each role is informed in real time when a patient advances through the care pathway — eliminating the need for manual handoffs.
+
+Key capabilities include: automated pharmacy inventory tracking with batch and expiry management; multi-location stock transfers and adjustments; ICD-10 diagnosis coding; IPD admission kanban boards with clinical severity tagging; QWeb PDF report generation for prescriptions, pharmacy receipts, and patient history summaries; and a Paystack Mobile Money integration (via the companion `shs_ghana` module) for cashless payments. A low-stock dashboard and drug-expiry alert dashboard give pharmacists proactive visibility into inventory health.
+
+The codebase follows Odoo 19 conventions throughout: ORM Constraints replace legacy `_sql_constraints`, Bootstrap 5 classes are used in views, and all XML data files are load-order safe — actions are always declared before views that reference them. The module is installable independently of `shs_ghana` and is actively maintained as a living system.
+
+---
+
+## 🎯 Project Goals & Scope
+
+MediSite Clinic is built to solve real operational problems faced by medical centres in Ghana. The following goals guide every feature and design decision:
+
+1. **Eliminate paper-based records** — Replace handwritten patient folders, paper prescription pads, and manual stock cards with a centralised, searchable digital record system that any authorised staff member can access instantly.
+
+2. **Reduce patient waiting time** — Automate handoffs between departments (nurse → doctor → lab → pharmacy) using real-time voice and on-screen notifications, so no patient is forgotten in a waiting room due to a missed message.
+
+3. **Prevent medication errors and stock-outs** — Track every drug dispensed to a patient, deduct stock automatically, and alert pharmacy staff when any drug falls below minimum threshold or approaches its expiry date.
+
+4. **Enforce clinical accountability** — Record an immutable audit trail for every state change in a consultation, every prescription written, and every stock adjustment — making the system trustworthy for clinical governance and regulatory review.
+
+5. **Enable cashless payment** — Integrate Paystack Mobile Money so patients can pay pharmacy bills via MoMo without cash handling, reducing fraud risk and improving financial reconciliation.
+
+6. **Support in-patient care management** — Give nurses and doctors a live kanban board of admitted patients with severity tagging, bed assignment, ward round notes, and automatic length-of-stay calculation.
+
+7. **Generate professional clinical documents** — Produce PDF prescriptions, pharmacy receipts, and complete patient history reports on demand, suitable for insurance claims, referrals, and regulatory submissions.
+
+8. **Scale across multiple Ghana facilities** — Design the module to be deployable at any Ghanaian clinic or hospital with minimal configuration, respecting local naming conventions (e.g. ALL-CAPS patient names) and payment methods.
+
+---
+
 ## CHANGELOG
 
 ### [1.0.0] – Initial Stable Baseline

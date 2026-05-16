@@ -6,25 +6,86 @@
         <field name="name">med.pharmacy.product.form</field>
         <field name="model">med.pharmacy.product</field>
         <field name="arch" type="xml">
-            <form string="Pharmacy Product">
+            <form string="Pharmacy Product" class="med_custom_pharmacy_form">
+                <header>
+                    <button name="%(action_med_stock_adjust)d"
+                            string="Stock Adjustment"
+                            type="action"
+                            class="btn-primary"/>
+                    <button name="%(action_med_stock_transfer)d"
+                            string="Transfer Stock"
+                            type="action"/>
+                </header>
                 <sheet>
-                    <group>
-                        <group string="Product Information">
-                            <field name="name"/>
-                            <field name="strength"/>
+                    <!-- Title using shared CSS gradient -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Drug Name e.g., Paracetamol"/>
+                        </h1>
+                        <h2>
+                            <field name="strength" placeholder="Strength e.g., 500mg"/>
+                        </h2>
+                    </div>
+
+                    <!-- General & Pricing -->
+                    <group col="2">
+                        <group string="General Information">
                             <field name="form"/>
-                            <field name="active"/>
+                            <field name="is_consumable"/>
+                            <field name="active" widget="boolean_toggle"/>
                         </group>
-
-                        <group string="Pricing &amp; Stock">
-                            <field name="unit_price"/>
-                            <field name="qty_available"/>
+                        <group string="Pricing &amp; QTY">
+                            <field name="unit_price" widget="monetary"/>
+                            <field name="qty_available" readonly="1" decoration-danger="qty_available &lt; reorder_level" decoration-success="qty_available &gt;= reorder_level" decoration-bf="1"/>
                         </group>
                     </group>
 
-                    <group>
-                        <field name="notes"/>
-                    </group>
+                    <notebook>
+
+                        <!-- STOCK CONTROLS -->
+                        <page string="Stock Controls" name="stock_levels">
+                            <group col="2">
+                                <group>
+                                    <field name="min_stock"/>
+                                    <field name="max_stock"/>
+                                </group>
+                                <group>
+                                    <field name="reorder_level"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- BATCHES & EXPIRY -->
+                        <page string="Batch &amp; Expiry" name="batch_numbers">
+                            <field name="batch_ids" nolabel="1">
+                                <list editable="bottom" decoration-danger="expiry_date &lt; current_date">
+                                    <field name="name" string="Batch Number"/>
+                                    <field name="expiry_date"/>
+                                    <field name="cost_price"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- LOCATION STOCK -->
+                        <page string="Storage Locations" name="stock_locations">
+                            <field name="stock_ids" nolabel="1">
+                                <list decoration-info="quantity &gt; 0">
+                                    <field name="location_id" string="Store/Department"/>
+                                    <field name="batch_id"/>
+                                    <field name="quantity" sum="Total Quantity"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- NOTES -->
+                        <page string="Notes" name="notes">
+                            <group>
+                                <field name="notes" placeholder="Enter additional drug information here..." nolabel="1" colspan="2"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+
                 </sheet>
             </form>
         </field>
@@ -35,13 +96,34 @@
         <field name="name">med.pharmacy.product.tree</field>
         <field name="model">med.pharmacy.product</field>
         <field name="arch" type="xml">
-            <tree string="Pharmacy Products">
+            <list string="Pharmacy Products">
                 <field name="name"/>
                 <field name="strength"/>
                 <field name="form"/>
                 <field name="qty_available"/>
                 <field name="unit_price"/>
-            </tree>
+            </list>
+        </field>
+    </record>
+
+    <!-- ================= SEARCH VIEW ================= -->
+    <record id="view_med_pharmacy_product_search" model="ir.ui.view">
+        <field name="name">med.pharmacy.product.search</field>
+        <field name="model">med.pharmacy.product</field>
+        <field name="arch" type="xml">
+            <search string="Search Drugs">
+                <field name="name"/>
+                <field name="strength"/>
+                <field name="form"/>
+                <field name="is_low_stock"/>
+                <field name="needs_reorder"/>
+                <separator/>
+                <filter string="Low Stock" name="is_low_stock_filter" domain="[('is_low_stock', '=', 1)]"/>
+                <filter string="Reorder Required" name="needs_reorder_filter" domain="[('needs_reorder', '=', 1)]"/>
+                <separator/>
+                <filter string="Consumables" name="consumable" domain="[('is_consumable', '=', True)]"/>
+                <filter string="Medications" name="medication" domain="[('is_consumable', '=', False)]"/>
+            </search>
         </field>
     </record>
 

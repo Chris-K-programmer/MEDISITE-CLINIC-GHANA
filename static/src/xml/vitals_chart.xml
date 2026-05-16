@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="medisite_clinic.VitalsChart">
+        <div class="o_medisite_vitals_chart_container p-3">
+            <h3 class="mb-3">Vital Signs History</h3>
+            <div class="row">
+                <div class="col-12 col-xl-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Weight &amp; Temperature</h5>
+                            <canvas t-ref="weightTempChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">Blood Pressure &amp; Heart Rate</h5>
+                            <canvas t-ref="bpPulseChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div t-if="!state.hasData" class="alert alert-info mt-3">
+                No historical medical data found for this patient to display trends.
+            </div>
+        </div>
+    </t>
+</templates>

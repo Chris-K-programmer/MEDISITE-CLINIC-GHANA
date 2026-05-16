@@ -1,0 +1,26 @@
+<odoo>
+    <record id="loc_main" model="med.pharmacy.location">
+        <field name="name">Main Store</field>
+        <field name="code">MAIN</field>
+    </record>
+
+    <record id="loc_lab" model="med.pharmacy.location">
+        <field name="name">Laboratory</field>
+        <field name="code">LAB</field>
+    </record>
+
+    <record id="loc_emergency" model="med.pharmacy.location">
+        <field name="name">Emergency</field>
+        <field name="code">ER</field>
+    </record>
+
+    <record id="loc_ambulance" model="med.pharmacy.location">
+        <field name="name">Ambulance</field>
+        <field name="code">AMB</field>
+    </record>
+
+    <record id="loc_ward" model="med.pharmacy.location">
+        <field name="name">Wards</field>
+        <field name="code">WARD</field>
+    </record>
+</odoo>

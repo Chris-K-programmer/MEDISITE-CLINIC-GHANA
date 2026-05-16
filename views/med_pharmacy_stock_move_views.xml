@@ -5,14 +5,14 @@
         <field name="name">med.pharmacy.stock.move.tree</field>
         <field name="model">med.pharmacy.stock.move</field>
         <field name="arch" type="xml">
-            <tree string="Stock Movements">
+            <list string="Stock Movements">
                 <field name="date"/>
                 <field name="product_id"/>
                 <field name="quantity"/>
                 <field name="move_type"/>
                 <field name="patient_id"/>
                 <field name="user_id"/>
-            </tree>
+            </list>
         </field>
     </record>
 

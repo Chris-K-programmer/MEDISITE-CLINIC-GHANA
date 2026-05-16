@@ -2,298 +2,469 @@
 <odoo>
 
     <!-- =====================================================
-         CONSULTATION FORM VIEW
+         CONSULTATION LIST VIEW
+    ====================================================== -->
+    <record id="view_med_consultation_list" model="ir.ui.view">
+        <field name="name">med.consultation.list</field>
+        <field name="model">med.consultation</field>
+        <field name="arch" type="xml">
+            <list string="Consultations" decoration-info="state == 'nurse'" decoration-warning="state in ['doctor', 'lab']" decoration-success="state == 'done'">
+                <field name="patient_name"/>
+                <field name="file_number"/>
+                <field name="date"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- =====================================================
+         CONSULTATION FORM VIEW (STABLE MODERN REDESIGN)
     ====================================================== -->
     <record id="view_med_consultation_form" model="ir.ui.view">
         <field name="name">med.consultation.form</field>
         <field name="model">med.consultation</field>
         <field name="arch" type="xml">
-            <form string="Medical Consultation">
-
-                <!-- ================= HEADER ================= -->
+            <form string="Medical Consultation" class="o_med_consultation_redesign">
                 <header>
-
-                    <button name="create_ipd" string="Admit to IPD" type="object"
-                            class="btn-primary" attrs="{'invisible':[('ipd_id','!=',False)]}"/>
+                    <button name="create_ipd" string="Admit to IPD" type="object" class="btn-primary fw-bold" invisible="ipd_id"/>
                     <field name="ipd_id" invisible="1"/>
-
-
-                    <!-- Nurse → Doctor -->
-                    <button name="action_send_to_doctor"
-                            type="object"
-                            string="Send to Doctor"
-                            class="btn-primary"
-                            groups="medisite_clinic.group_med_nurse"
-                            attrs="{'invisible':[('state','!=','nurse')]}"/>
-
-                    <!-- Doctor → Lab -->
-                    <button name="action_send_to_lab"
-                            type="object"
-                            string="Send to Lab"
-                            class="btn-primary"
-                            groups="medisite_clinic.group_med_doctor"
-                            attrs="{'invisible':[('state','!=','doctor')]}"/>
-
-                    <!-- Lab → Doctor -->
-                    <button name="action_send_to_doctor_from_lab"
-                            type="object"
-                            string="Return to Doctor"
-                            class="btn-primary"
-                            groups="medisite_clinic.group_med_lab"
-                            attrs="{'invisible':[('state','!=','lab')]}"/>
-
-                    <!-- Doctor completes -->
-                    <button name="action_done"
-                            type="object"
-                            string="Complete Consultation"
-                            class="btn-success"
-                            groups="medisite_clinic.group_med_doctor"
-                            attrs="{'invisible':[('state','!=','doctor')]}"/>
-
-                    <button name="action_send_to_pharmacy"
-                            type="object"
-                            string="Send to Pharmacy"
-                            class="btn-primary"
-                            groups="medisite_clinic.group_med_doctor"
-                            attrs="{'invisible':[('state','!=','done')]}"/>
-
-
-                    <field name="state"
-                           widget="statusbar"
-                           statusbar_visible="nurse,doctor,lab,done"/>
-
+                    
+                    <button name="action_send_to_doctor" type="object" string="Send to Doctor" class="btn-outline-primary" groups="medisite_clinic.group_med_nurse" invisible="state != 'nurse'"/>
+                    <button name="action_send_to_lab" type="object" string="Send to Lab" class="btn-outline-primary" groups="medisite_clinic.group_med_nurse,medisite_clinic.group_med_doctor" invisible="state not in ['nurse', 'doctor']"/>
+                    <button name="action_send_to_doctor_from_lab" type="object" string="Return to Doctor" class="btn-outline-primary" groups="medisite_clinic.group_med_lab" invisible="state != 'lab'"/>
+                    <button name="action_done" type="object" string="Complete Consultation" class="btn-primary fw-bold" groups="medisite_clinic.group_med_doctor" invisible="state != 'doctor'"/>
+                    
+                    <field name="state" widget="statusbar" statusbar_visible="nurse,doctor,lab,done"/>
                 </header>
-
-                <!-- ================= BODY ================= -->
+                
                 <sheet>
+                    <!-- STEPPER -->
+                    <div class="med_consult_stepper mb-4 d-flex justify-content-between align-items-center bg-light p-3 rounded-3 shadow-sm border">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-weight: bold;">1</div>
+                            <div class="fw-bold text-primary">Nurse Assessment</div>
+                        </div>
+                        <div class="text-muted"><i class="fa fa-chevron-right"/></div>
+                        <div class="d-flex align-items-center gap-2 opacity-50" invisible="state == 'nurse'">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">2</div>
+                            <div>Doctor Consultation</div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2" invisible="state == 'nurse'">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-weight: bold;">2</div>
+                            <div class="fw-bold text-primary">Doctor Consultation</div>
+                        </div>
+                        <div class="text-muted"><i class="fa fa-chevron-right"/></div>
+                        <div class="d-flex align-items-center gap-2 opacity-50">
+                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">3</div>
+                            <div>Lab/Pharmacy</div>
+                        </div>
+                    </div>
 
-                    <group string="Pharmacy" groups="medisite_clinic.group_med_doctor,medisite_clinic.group_med_admin">
-                        <field name="pharmacy_order_id" readonly="1"/>
-                    </group>
+                    <!-- PATIENT HERO HEADER -->
+                    <div class="card mb-4 border-0 shadow-sm overflow-hidden" style="border-radius: 15px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center">
+                                    <field name="patient_image" widget="image" class="rounded-circle shadow-sm border border-3 border-white"/>
+                                </div>
+                                <div class="col-md-6 border-start ps-4">
+                                    <div class="mb-2">
+                                        <label for="patient_id" class="small fw-bold text-muted text-uppercase mb-1 d-block">Select Patient</label>
+                                        <field name="patient_id" placeholder="Search Patient by Name or File Number..." options="{'no_create': True}" class="fs-4 fw-bold text-dark w-100"/>
+                                    </div>
+                                    <h4 class="text-muted mb-3">File Number: <field name="file_number" readonly="1"/></h4>
+                                    <div class="d-flex gap-3 mb-2">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"><i class="fa fa-user me-1"/> Patient</span>
+                                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill"><i class="fa fa-birthday-cake me-1"/> <field name="age" readonly="1"/> Years</span>
+                                    </div>
+                                    <div class="row g-2 mt-1">
+                                        <div class="col-4">
+                                            <label for="nationality" class="small text-muted mb-0">Nationality</label>
+                                            <field name="nationality" class="d-block border-0 bg-transparent p-0 fw-bold text-dark"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="occupation" class="small text-muted mb-0">Occupation</label>
+                                            <field name="occupation" class="d-block border-0 bg-transparent p-0 fw-bold text-dark"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="employer" class="small text-muted mb-0">Employer</label>
+                                            <field name="employer" class="d-block border-0 bg-transparent p-0 fw-bold text-dark"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="p-3 bg-white rounded-3 shadow-sm d-inline-block border">
+                                        <div class="small fw-bold text-uppercase text-muted mb-1">Consultation Date</div>
+                                        <div class="fs-4 fw-bold text-primary"><field name="date" readonly="1"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="row">
+                        <!-- LEFT COLUMN: Main Clinical Workflow -->
+                        <div class="col-md-8">
+                            <notebook>
+                                <!-- TAB 1: NURSE ASSESSMENT -->
+                                <page string="Nurse Assessment" class="p-3">
+                                    <div class="card mb-3 border-0 bg-light bg-opacity-50">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold mb-3 text-primary"><i class="fa fa-history me-2"/> Chief Complaint &amp; History</h5>
+                                            <div class="row mb-3">
+                                                <div class="col-12">
+                                                    <label for="main_complaint" class="fw-bold text-uppercase small text-muted">Chief Complaint</label>
+                                                    <field name="main_complaint" class="form-control mb-3" placeholder="Primary reason for visit..." readonly="state == 'done'"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <field name="new_episode" widget="boolean_toggle"/> <label for="new_episode" class="me-3"/>
+                                                    <field name="recurrent_episode" widget="boolean_toggle"/> <label for="recurrent_episode"/>
+                                                </div>
+                                            </div>
+                                            <field name="history_details" class="mt-3" placeholder="Detailed history of present illness..." readonly="state == 'done'"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="card mb-3 border-0 bg-light bg-opacity-50">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold mb-3 text-success"><i class="fa fa-user-md me-2"/> Medical History &amp; Allergies</h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="past_medical_history" class="fw-bold small text-muted">Past Medical History</label>
+                                                    <field name="past_medical_history" placeholder="Previous conditions..." readonly="state == 'done'"/>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="allergies" class="fw-bold small text-danger">Allergies</label>
+                                                    <field name="allergies" placeholder="Known allergies..." readonly="state == 'done'"/>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-3">
+                                                <div class="col-md-6">
+                                                    <label for="family_history" class="fw-bold small text-muted">Family History</label>
+                                                    <field name="family_history" readonly="state == 'done'"/>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="travel_vacc_history" class="fw-bold small text-muted">Travel &amp; Vaccine History</label>
+                                                    <field name="travel_vacc_history" readonly="state == 'done'"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="card mb-3 border-0 bg-light bg-opacity-50" invisible="gender != 'female'">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold mb-3 text-warning"><i class="fa fa-venus me-2"/> Obstetrics &amp; Gynecology</h5>
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <field name="female_pregnant" widget="boolean_toggle"/> <label for="female_pregnant" class="ms-2"/>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <field name="oral_contraception" widget="boolean_toggle"/> <label for="oral_contraception" class="ms-2"/>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="grav" class="small fw-bold text-muted">Gravida</label>
+                                                    <field name="grav" class="form-control" readonly="state == 'done'"/>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="para" class="small fw-bold text-muted">Para</label>
+                                                    <field name="para" class="form-control" readonly="state == 'done'"/>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="lmp_date" class="small fw-bold text-muted">LMP</label>
+                                                    <field name="lmp_date" class="form-control" readonly="state == 'done'"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </page>
 
-                    <!-- ========== PATIENT HEADER ========== -->
-                    <group>
-                        <group>
-                            <field name="patient_id" options="{'no_open': True}"/>
-                            <field name="file_number" readonly="1"/>
-                            <field name="patient_name" readonly="1"/>
-                        </group>
+                                <!-- TAB 2: DOCTOR CLINICAL EXAM -->
+                                <page string="Clinical Assessment" class="p-3" groups="medisite_clinic.group_med_doctor">
+                                    <h5 class="fw-bold mb-4 border-bottom pb-2">Systematic Examination</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_cns" class="fw-bold small text-muted text-uppercase mb-2 d-block">CNS &amp; Mentation</label>
+                                                <field name="sys_cns" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_cardio" class="fw-bold small text-muted text-uppercase mb-2 d-block">Cardiovascular</label>
+                                                <field name="sys_cardio" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_resp" class="fw-bold small text-muted text-uppercase mb-2 d-block">Respiratory</label>
+                                                <field name="sys_resp" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_gastro" class="fw-bold small text-muted text-uppercase mb-2 d-block">Gastrointestinal</label>
+                                                <field name="sys_gastro" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_eyes" class="fw-bold small text-muted text-uppercase mb-2 d-block">Eyes</label>
+                                                <field name="sys_eyes" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_ent" class="fw-bold small text-muted text-uppercase mb-2 d-block">ENT</label>
+                                                <field name="sys_ent" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_uro" class="fw-bold small text-muted text-uppercase mb-2 d-block">Urogenital</label>
+                                                <field name="sys_uro" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_musculo" class="fw-bold small text-muted text-uppercase mb-2 d-block">Musculoskeletal</label>
+                                                <field name="sys_musculo" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_derm" class="fw-bold small text-muted text-uppercase mb-2 d-block">Dermatology</label>
+                                                <field name="sys_derm" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 border rounded-3">
+                                                <label for="sys_other" class="fw-bold small text-muted text-uppercase mb-2 d-block">Other Systems</label>
+                                                <field name="sys_other" nolabel="1" placeholder="Findings..." readonly="state == 'done'"/>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <group>
-                            <field name="date"
-                                   readonly="1"
-                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
-                            <field name="time"
-                                   readonly="1"
-                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
-                            <field name="nationality"
-                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
-                            <field name="occupation"
-                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
-                            <field name="employer"
-                                   attrs="{'readonly':[('state','!=','nurse')]}"/>
-                        </group>
-                    </group>
+                                    <h5 class="fw-bold mt-5 mb-3 text-primary border-bottom pb-2">Diagnosis &amp; Decision</h5>
+                                    <div class="row mb-4">
+                                        <div class="col-md-8">
+                                            <label for="working_diagnosis" class="fw-bold small text-muted mb-2 d-block">Primary Diagnosis</label>
+                                            <field name="working_diagnosis" class="fs-4 fw-bold text-primary" placeholder="Enter diagnosis..." readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="icd10_id" class="fw-bold small text-muted mb-2 d-block">ICD-10 Code</label>
+                                            <div class="d-flex">
+                                                <field name="icd10_id" nolabel="1" options="{'no_create': True}" class="flex-grow-1" readonly="state == 'done'"/>
+                                                <button name="action_search_icd" type="object" icon="fa-search" class="btn-primary ms-1"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="treatment_plan" class="fw-bold small text-muted mb-2 d-block">Plan &amp; Instructions</label>
+                                            <field name="treatment_plan" placeholder="Steps to be taken..." readonly="state == 'done'"/>
+                                            <label for="other_treatment" class="fw-bold small text-muted mt-3 mb-2 d-block">Other Treatments</label>
+                                            <field name="other_treatment" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="edu_about_condition" class="fw-bold small text-muted mb-2 d-block">Education (Condition)</label>
+                                            <field name="edu_about_condition" readonly="state == 'done'"/>
+                                            <label for="edu_about_medication" class="fw-bold small text-muted mt-3 mb-2 d-block">Education (Medication)</label>
+                                            <field name="edu_about_medication" readonly="state == 'done'"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-3 mt-3 border-top pt-3">
+                                        <div class="col-md-4">
+                                            <label for="sick_leave_days" class="fw-bold small text-muted mb-2 d-block">Sick Leave (Days)</label>
+                                            <field name="sick_leave_days" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="sick_leave_from" class="fw-bold small text-muted mb-2 d-block">Sick Leave From</label>
+                                            <field name="sick_leave_from" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="sick_leave_to" class="fw-bold small text-muted mb-2 d-block">Sick Leave To</label>
+                                            <field name="sick_leave_to" readonly="state == 'done'"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row g-3 mt-3 border-top pt-3">
+                                        <div class="col-md-4">
+                                            <label for="follow_up_date" class="fw-bold small text-muted mb-2 d-block">Follow Up Date</label>
+                                            <field name="follow_up_date" readonly="state == 'done'"/>
+                                            <label for="referral_facility" class="fw-bold small text-muted mt-3 mb-2 d-block">Referral Facility</label>
+                                            <field name="referral_facility" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label for="follow_up_results" class="fw-bold small text-muted mb-2 d-block">Follow Up Notes / Case Escalation</label>
+                                            <field name="follow_up_results" placeholder="Notes..." readonly="state == 'done'"/>
+                                            <field name="case_escalation" class="mt-2" placeholder="Escalation details..." readonly="state == 'done'"/>
+                                        </div>
+                                    </div>
+                                </page>
 
-                    <!-- ========== NOTEBOOK ========== -->
-                    <notebook>
-                        <!-- ================= PREVIOUS CONSULTATIONS ================= -->
-                        <page string="Previous Consultations"
-                              groups="medisite_clinic.group_med_doctor,medisite_clinic.group_med_admin">
+                                <!-- TAB 3: LAB / SIDE ROOM -->
+                                <page string="Lab / Side Room" class="p-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5 class="fw-bold mb-3 text-success border-bottom pb-2">Rapid Tests</h5>
+                                            <group>
+                                                <field name="malaria_rdt" readonly="state == 'done'"/>
+                                                <field name="malaria_strain" invisible="malaria_rdt not in ['positive', 'pos']" readonly="state == 'done'"/>
+                                                <field name="blood_glucose" readonly="state == 'done'"/>
+                                                <field name="myoglobin" readonly="state == 'done'"/>
+                                                <field name="ck_mb" readonly="state == 'done'"/>
+                                                <field name="troponin" readonly="state == 'done'"/>
+                                            </group>
+                                            
+                                            <h5 class="fw-bold mt-4 mb-3 text-info border-bottom pb-2">Other Investigations</h5>
+                                            <group>
+                                                <field name="xray_requested" readonly="state == 'done'"/>
+                                                <field name="investigations" readonly="state == 'done'"/>
+                                                <field name="ecg" readonly="state == 'done'"/>
+                                                <field name="other_side_room" readonly="state == 'done'"/>
+                                            </group>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5 class="fw-bold mb-3 text-warning border-bottom pb-2">Urinalysis</h5>
+                                            <group>
+                                                <field name="urinalysis_sg" readonly="state == 'done'"/>
+                                                <field name="urinalysis_ph" readonly="state == 'done'"/>
+                                                <field name="urinalysis_leu" readonly="state == 'done'"/>
+                                                <field name="urinalysis_nit" readonly="state == 'done'"/>
+                                                <field name="urinalysis_pro" readonly="state == 'done'"/>
+                                                <field name="urinalysis_glu" readonly="state == 'done'"/>
+                                                <field name="urinalysis_ket" readonly="state == 'done'"/>
+                                                <field name="urinalysis_ubg" readonly="state == 'done'"/>
+                                                <field name="urinalysis_bil" readonly="state == 'done'"/>
+                                                <field name="urinalysis_ery" readonly="state == 'done'"/>
+                                            </group>
+                                        </div>
+                                    </div>
+                                </page>
 
-                            <field name="previous_consultation_ids" readonly="1">
-                                <tree>
-                                    <field name="date"/>
-                                    <field name="working_diagnosis"/>
-                                    <field name="treatment_plan"/>
-                                    <field name="state"/>
-                                    <field name="treating_hcp_id"/>
-                                </tree>
-                            </field>
+                                <!-- TAB 4: PRESCRIPTION -->
+                                <page string="Prescription" class="p-3" groups="medisite_clinic.group_med_doctor">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="fw-bold mb-0">Medication Plan</h5>
+                                        <button name="action_add_medicine" type="object" string="Add Drug" class="btn btn-sm btn-outline-primary" icon="fa-plus"/>
+                                    </div>
+                                    <field name="medication_line_ids" nolabel="1" readonly="state == 'done'">
+                                        <list editable="bottom">
+                                            <field name="product_id" string="Drug"/>
+                                            <field name="dosage"/>
+                                            <field name="route"/>
+                                            <field name="frequency"/>
+                                            <field name="quantity" sum="Total Qty"/>
+                                            <field name="dosage_instructions"/>
+                                        </list>
+                                    </field>
+                                </page>
+                            </notebook>
+                        </div>
 
-                        </page>
+                        <!-- RIGHT COLUMN: Sidebar (Vitals & Labs) -->
+                        <div class="col-md-4">
+                            <!-- Vitals Monitoring Card -->
+                            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 15px; border-left: 5px solid #0d6efd !important;">
+                                <div class="card-header bg-white border-0 pt-3">
+                                    <h5 class="fw-bold mb-0"><i class="fa fa-heartbeat text-primary me-2"/> Vital Signs</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-4">
+                                            <div class="small text-muted fw-bold">Weight (kg)</div>
+                                            <field name="weight" class="form-control form-control-sm" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small text-muted fw-bold">Height (cm)</div>
+                                            <field name="height" class="form-control form-control-sm" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small text-muted fw-bold">Temp (°C)</div>
+                                            <field name="temp" class="form-control form-control-sm text-danger fw-bold" readonly="state == 'done'"/>
+                                        </div>
+                                    </div>
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-4">
+                                            <div class="small text-muted fw-bold">BP (mmHg)</div>
+                                            <field name="bp" class="form-control form-control-sm text-primary fw-bold" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small text-muted fw-bold">HR (bpm)</div>
+                                            <field name="hr" class="form-control form-control-sm text-success fw-bold" readonly="state == 'done'"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="small text-muted fw-bold">RR (/min)</div>
+                                            <field name="rr" class="form-control form-control-sm" readonly="state == 'done'"/>
+                                        </div>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="small text-muted fw-bold">SPO2 (%)</div>
+                                            <field name="spo2" class="form-control form-control-sm text-info fw-bold" readonly="state == 'done'"/>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 p-3 bg-light rounded-3 border-start border-4 border-info">
+                                        <div class="small fw-bold text-muted text-uppercase mb-1">Nurse Triage Note</div>
+                                        <field name="triage_note" class="small fst-italic" readonly="state == 'done'"/>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <page string="Audit Trail"
-                              groups="medisite_clinic.group_med_admin,medisite_clinic.group_med_doctor">
-                            <field name="audit_ids" readonly="1">
-                                <tree>
-                                    <field name="create_date"/>
-                                    <field name="user_id"/>
-                                    <field name="role"/>
-                                    <field name="action"/>
-                                    <field name="field_name"/>
-                                    <field name="old_value"/>
-                                    <field name="new_value"/>
-                                </tree>
-                            </field>
-                        </page>
+                            <!-- Side Room Snapshot -->
+                            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 15px; border-left: 5px solid #198754 !important;">
+                                <div class="card-header bg-white border-0 pt-3">
+                                    <h5 class="fw-bold mb-0"><i class="fa fa-flask text-success me-2"/> Quick Side Room</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                                        <span class="text-muted small fw-bold">MALARIA RDT</span>
+                                        <field name="malaria_rdt" nolabel="1" class="fw-bold" readonly="state == 'done'"/>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                                        <span class="text-muted small fw-bold">BLOOD GLUCOSE</span>
+                                        <div class="d-flex align-items-center">
+                                            <field name="blood_glucose" nolabel="1" class="fw-bold text-end" style="width: 60px;" readonly="state == 'done'"/>
+                                            <span class="ms-1 small">mmol/L</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                                        <span class="text-muted small fw-bold">URINALYSIS (PRO)</span>
+                                        <field name="urinalysis_pro" nolabel="1" readonly="state == 'done'"/>
+                                    </div>
+                                    <div class="text-center mt-2">
+                                        <span class="small text-muted fst-italic">See Lab Tab for full details</span>
+                                    </div>
+                                </div>
+                            </div>
 
-
-                        <!-- ================= HISTORY ================= -->
-                        <page string="History" groups="medisite_clinic.group_med_nurse">
-                            <group>
-                                <field name="main_complaint"/>
-                                <field name="new_episode"/>
-                                <field name="recurrent_episode"/>
-                                <field name="history_details"/>
-                            </group>
-                            <group>
-                                <field name="female_pregnant"/>
-                                <field name="grav"/>
-                                <field name="para"/>
-                                <field name="lmp_date"/>
-                                <field name="oral_contraception"/>
-                            </group>
-                            <group>
-                                <field name="past_medical_history"/>
-                                <field name="allergies"/>
-                                <field name="family_history"/>
-                                <field name="travel_vacc_history"/>
-                            </group>
-                        </page>
-
-                        <!-- ================= VITAL SIGNS ================= -->
-                        <page string="Vitals" groups="medisite_clinic.group_med_nurse">
-                            <group>
-                                <field name="weight"/>
-                                <field name="height"/>
-                                <field name="bp"/>
-                                <field name="hr"/>
-                                <field name="temp"/>
-                                <field name="rr"/>
-                                <field name="spo2"/>
-                            </group>
-                            <!-- Triage Note -->
-                            <group string="Triage Note" colspan="2">
-                                <field name="triage_note"
-                                       placeholder="Enter triage notes here..."
-                                       nolabel="1"
-                                       widget="text"
-                                       class="o_input_full"
-                                       options="{'rows': 6}"/>
-                            </group>
-                        </page>
-
-                        <!-- ================= LAB / SIDE ROOM ================= -->
-                        <page string="Lab / Side Room"
-                              groups="medisite_clinic.group_med_lab,medisite_clinic.group_med_doctor">
-                            <group>
-                                <field name="malaria_rdt"
-                                       attrs="{'readonly':[('state','!=','lab')]}"/>
-                                <field name="malaria_strain"
-                                       attrs="{'readonly':[('state','!=','lab')]}"/>
-                                <field name="blood_glucose"
-                                       attrs="{'readonly':[('state','!=','lab')]}"/>
-                            </group>
-
-                            <group string="Urinalysis">
-                                <field name="urinalysis_sg"/>
-                                <field name="urinalysis_ph"/>
-                                <field name="urinalysis_leu"/>
-                                <field name="urinalysis_nit"/>
-                                <field name="urinalysis_pro"/>
-                                <field name="urinalysis_glu"/>
-                                <field name="urinalysis_ket"/>
-                                <field name="urinalysis_ubg"/>
-                                <field name="urinalysis_bil"/>
-                                <field name="urinalysis_ery"/>
-                            </group>
-
-                            <group string="Cardiac Markers">
-                                <field name="myoglobin"/>
-                                <field name="ck_mb"/>
-                                <field name="troponin"/>
-                                <field name="ecg"/>
-                                <field name="other_side_room"/>
-                            </group>
-                        </page>
-
-                        <!-- ================= DOCTOR ================= -->
-                        <page string="Doctor Assessment" groups="medisite_clinic.group_med_doctor">
-
-
-                            <group>
-                                <field name="sys_cns"/>
-                                <field name="sys_eyes"/>
-                                <field name="sys_ent"/>
-                                <field name="sys_cardio"/>
-                                <field name="sys_resp"/>
-                                <field name="sys_gastro"/>
-                                <field name="sys_uro"/>
-                                <field name="sys_musculo"/>
-                                <field name="sys_derm"/>
-                                <field name="sys_other"/>
-                            </group>
-
-                            <group string="Clinical Decision">
-                                <field name="working_diagnosis"/>
-                                <field name="icd10_id" options="{'no_create': False}" placeholder="Select ICD-10 Code"/>
-                                <field name="investigations"/>
-                            </group>
-
-                            <group string="Prescription (Drugs)">
-                                <field name="medication"
-                                       placeholder="Enter one drug per line. Example:
-Paracetamol 500mg
-Amoxicillin 250mg
-Vitamin C"
-                                       nolabel="1"/>
-                            </group>
-
-                            <group string="Treatment Plan">
-                                <field name="treatment_plan"/>
-                                <field name="other_treatment"/>
-                                <field name="xray_requested"/>
-                                <field name="referral_facility"/>
-                            </group>
-
-                            <group string="External Hospital Documents">
-                                <field name="external_document_ids"
-                                       widget="many2many_binary"
-                                       options="{'accepted_file_extensions': '.pdf,.jpg,.png'}"/>
-                            </group>
-
-
-                            <group string="Follow-up">
-                                <field name="edu_about_condition"/>
-                                <field name="edu_about_medication"/>
-                                <field name="sick_leave_from"/>
-                                <field name="sick_leave_to"/>
-                                <field name="sick_leave_days"/>
-                                <field name="follow_up_date"/>
-                                <field name="follow_up_results"/>
-                            </group>
-
-                            <group string="Sign Off">
-                                <field name="case_escalation"/>
-                                <field name="treating_hcp_id"/>
-                                <field name="signature" widget="image"/>
-                                <field name="signature_user" readonly="1"/>
-                                <field name="date_signed" readonly="1"/>
-                            </group>
-                        </page>
-
-                    </notebook>
+                            <!-- Live Audit Timeline -->
+                            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                                <div class="card-header bg-white border-0 pt-3">
+                                    <h5 class="fw-bold mb-0 text-muted small text-uppercase">Audit Trail</h5>
+                                </div>
+                                <div class="card-body">
+                                    <field name="audit_ids" nolabel="1">
+                                        <list create="0" delete="0" edit="0" limit="5">
+                                            <field name="create_date" string="Time"/>
+                                            <field name="action" string="Action"/>
+                                            <field name="user_id" string="User" widget="many2one_avatar_user"/>
+                                        </list>
+                                    </field>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chatter inside sheet forces bottom layout -->
+                    <chatter/>
                 </sheet>
             </form>
         </field>
     </record>
-
-    <!-- =====================================================
-         TREE VIEW
-    ====================================================== -->
-    <record id="view_med_consultation_tree" model="ir.ui.view">
-        <field name="name">med.consultation.tree</field>
-        <field name="model">med.consultation</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="patient_name"/>
-                <field name="file_number"/>
-                <field name="date"/>
-                <field name="state"/>
-            </tree>
-        </field>
-    </record>
-
 </odoo>
+

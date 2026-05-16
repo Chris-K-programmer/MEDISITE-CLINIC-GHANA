@@ -1,44 +1,60 @@
+/* IPD Kanban CSS — ALL rules scoped under .med_ipd_kanban to prevent leaking into form views */
+
 .med_ipd_kanban .med_ipd_card {
-    border-radius: 10px;
-    padding: 12px;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: 0.2s;
+    border-radius: 12px;
+    padding: 16px;
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 12px;
 }
 
 .med_ipd_kanban .med_ipd_card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    border-color: #007bff;
 }
 
-.med_ipd_header {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #003366;
+.med_ipd_kanban .med_ipd_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
 }
 
-.med_ipd_ref {
-    display: block;
-    font-size: 11px;
-    color: #666;
+.med_ipd_kanban .med_header_main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.med_ipd_bed {
-    margin-top: 6px;
-    font-size: 13px;
+.med_ipd_kanban .med_patient_name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
 }
 
-.med_ipd_status {
-    margin-top: 10px;
-}
-
-.med_ipd_date {
-    margin-top: 6px;
+.med_ipd_kanban .med_ipd_ref {
     font-size: 11px;
     color: #888;
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
 }
-.med_sep {
-    margin: 0 6px;
-    color: #999;
+
+.med_ipd_kanban .severity_badge {
+    font-size: 11px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.med_ipd_kanban .severity_stable { background-color: #d4edda; color: #155724; }
+.med_ipd_kanban .severity_serious { background-color: #fff3cd; color: #856404; }
+.med_ipd_kanban .severity_critical { background-color: #f8d7da; color: #721c24; }
+
+.med_ipd_kanban .med_ipd_footer {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 10px;
 }

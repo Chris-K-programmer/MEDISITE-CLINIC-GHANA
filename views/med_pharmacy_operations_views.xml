@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <!-- Adjustment -->
+    <record id="view_stock_adjust_wizard" model="ir.ui.view">
+        <field name="model">med.pharmacy.adjust.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="product_id"/>
+                    <field name="batch_id"/>
+                    <field name="location_id"/>
+                    <field name="quantity"/>
+                    <field name="note"/>
+                </group>
+                <footer>
+                    <button string="Apply" type="object" name="action_adjust" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <!-- Transfer -->
+    <record id="view_stock_transfer_wizard" model="ir.ui.view">
+        <field name="model">med.pharmacy.transfer.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="product_id"/>
+                    <field name="batch_id"/>
+                    <field name="source_location_id"/>
+                    <field name="dest_location_id"/>
+                    <field name="quantity"/>
+                </group>
+                <footer>
+                    <button string="Transfer" type="object" name="action_transfer" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+</odoo>

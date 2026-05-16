@@ -1,0 +1,404 @@
+/* ===== MediSite Clinic Homepage ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --accent: #06d6a0;
+  --accent2: #f72585;
+  --accent3: #7209b7;
+  --bg-light: #f0f9ff;
+  --bg-dark: #0f172a;
+  --card-light: rgba(255,255,255,0.85);
+  --card-dark: rgba(15,23,42,0.85);
+  --text-light: #1e293b;
+  --text-dark: #e2e8f0;
+  --border-light: rgba(14,165,233,0.2);
+  --border-dark: rgba(14,165,233,0.3);
+  --shadow-light: 0 25px 60px rgba(0,0,0,0.12);
+  --shadow-dark: 0 25px 60px rgba(0,0,0,0.5);
+  --radius: 20px;
+  --transition: 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body.medi-homepage {
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  background: var(--bg-light);
+  color: var(--text-light);
+  transition: background var(--transition), color var(--transition);
+}
+body.medi-homepage.dark-mode {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+/* ===== ANIMATED GRADIENT BACKGROUND ===== */
+.medi-bg-canvas {
+  position:fixed; inset:0; z-index:0;
+  overflow:hidden;
+}
+.medi-bg-canvas .gradient-layer {
+  position:absolute; inset:-50%;
+  width:200%; height:200%;
+  background: conic-gradient(from 0deg at 50% 50%,
+    #0ea5e9, #06d6a0, #f72585, #7209b7, #3b82f6, #0ea5e9);
+  animation: rotateBg 20s linear infinite;
+  opacity:0.35;
+  filter:blur(80px);
+}
+.dark-mode .medi-bg-canvas .gradient-layer { opacity:0.2; }
+
+@keyframes rotateBg {
+  to { transform:rotate(360deg); }
+}
+
+.medi-bg-canvas .orb {
+  position:absolute;
+  border-radius:50%;
+  filter:blur(60px);
+  animation: floatOrb 12s ease-in-out infinite alternate;
+}
+.medi-bg-canvas .orb:nth-child(2) {
+  width:500px;height:500px;top:-10%;left:-5%;
+  background:radial-gradient(circle,rgba(14,165,233,0.5),transparent 70%);
+}
+.medi-bg-canvas .orb:nth-child(3) {
+  width:400px;height:400px;bottom:10%;right:-5%;
+  background:radial-gradient(circle,rgba(6,214,160,0.4),transparent 70%);
+  animation-delay:-4s;
+}
+.medi-bg-canvas .orb:nth-child(4) {
+  width:350px;height:350px;top:50%;left:40%;
+  background:radial-gradient(circle,rgba(247,37,133,0.3),transparent 70%);
+  animation-delay:-8s;
+}
+
+@keyframes floatOrb {
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(60px,-80px) scale(1.15);}
+}
+
+/* Hero image overlay */
+.medi-hero-img {
+  position:fixed; inset:0; z-index:0;
+  background: url('/medisite_clinic/static/src/img/pharmacy_hero_bg.png') center/cover no-repeat;
+  opacity:0.15;
+  transition: opacity var(--transition);
+}
+.dark-mode .medi-hero-img { opacity:0.08; }
+
+/* ===== NAVBAR ===== */
+.medi-nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 40px;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-light);
+  transition: background var(--transition), border-color var(--transition);
+}
+.dark-mode .medi-nav {
+  background:rgba(15,23,42,0.7);
+  border-color:var(--border-dark);
+}
+
+.medi-nav .logo {
+  display:flex; align-items:center; gap:12px;
+  font-family:'Outfit',sans-serif; font-weight:800; font-size:1.5rem;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  text-decoration:none;
+}
+.medi-nav .logo svg { width:36px; height:36px; }
+.medi-nav .nav-links { display:flex; gap:28px; align-items:center; }
+.medi-nav .nav-links a {
+  text-decoration:none; font-weight:500; font-size:0.95rem;
+  color:var(--text-light); opacity:0.7;
+  position:relative; transition: opacity var(--transition);
+}
+.dark-mode .medi-nav .nav-links a { color:var(--text-dark); }
+.medi-nav .nav-links a::after {
+  content:''; position:absolute; bottom:-4px; left:0;
+  width:0; height:2px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  transition:width var(--transition);
+}
+.medi-nav .nav-links a:hover { opacity:1; }
+.medi-nav .nav-links a:hover::after { width:100%; }
+
+/* Dark mode toggle */
+.theme-toggle {
+  width:52px; height:28px;
+  background:linear-gradient(135deg,#cbd5e1,#94a3b8);
+  border-radius:14px; border:none; cursor:pointer;
+  position:relative; transition:background var(--transition);
+}
+.dark-mode .theme-toggle {
+  background:linear-gradient(135deg,var(--primary),var(--accent3));
+}
+.theme-toggle .toggle-knob {
+  position:absolute; top:3px; left:3px;
+  width:22px; height:22px; border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,0.2);
+  transition:transform var(--transition);
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+}
+.dark-mode .theme-toggle .toggle-knob { transform:translateX(24px); }
+
+/* ===== MAIN LAYOUT ===== */
+.medi-main {
+  position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding:100px 40px 40px;
+}
+
+.medi-content {
+  display:grid;
+  grid-template-columns:1fr 420px;
+  gap:60px;
+  max-width:1100px; width:100%;
+  align-items:center;
+}
+
+/* ===== LEFT: HERO TEXT ===== */
+.medi-hero { animation: fadeSlideUp 0.8s ease-out both; }
+
+@keyframes fadeSlideUp {
+  from{opacity:0;transform:translateY(30px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.medi-hero .badge {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 16px; border-radius:999px;
+  background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(6,214,160,0.15));
+  color:var(--primary); font-weight:600; font-size:0.8rem;
+  letter-spacing:0.5px; text-transform:uppercase;
+  margin-bottom:20px;
+  border:1px solid rgba(14,165,233,0.2);
+}
+.medi-hero .badge .pulse-dot {
+  width:8px;height:8px;border-radius:50%;background:var(--accent);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:0.5;transform:scale(1.4);}
+}
+
+.medi-hero h1 {
+  font-family:'Outfit',sans-serif;
+  font-size:3.2rem; font-weight:800; line-height:1.15;
+  margin-bottom:20px;
+}
+.medi-hero h1 .gradient-text {
+  background:linear-gradient(135deg,var(--primary),var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:200% auto;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer {
+  to{background-position:200% center;}
+}
+
+.medi-hero p {
+  font-size:1.1rem; line-height:1.7; opacity:0.7;
+  max-width:480px; margin-bottom:32px;
+}
+
+.medi-features {
+  display:flex; flex-direction:column; gap:14px;
+}
+.medi-features .feature-item {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 16px; border-radius:12px;
+  background:rgba(14,165,233,0.06);
+  border:1px solid rgba(14,165,233,0.1);
+  transition:all var(--transition);
+  cursor:default;
+}
+.medi-features .feature-item:hover {
+  background:rgba(14,165,233,0.12);
+  transform:translateX(8px);
+  border-color:rgba(14,165,233,0.3);
+}
+.medi-features .feature-item .icon {
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;font-size:16px;flex-shrink:0;
+}
+.medi-features .feature-item span {
+  font-weight:500; font-size:0.92rem;
+}
+
+/* ===== RIGHT: LOGIN CARD ===== */
+.medi-login-card {
+  background:var(--card-light);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-radius:var(--radius);
+  border:1px solid var(--border-light);
+  box-shadow:var(--shadow-light);
+  padding:40px 36px;
+  animation:fadeSlideUp 0.8s ease-out 0.2s both;
+  transition:background var(--transition),border-color var(--transition),box-shadow var(--transition);
+}
+.dark-mode .medi-login-card {
+  background:var(--card-dark);
+  border-color:var(--border-dark);
+  box-shadow:var(--shadow-dark);
+}
+.medi-login-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 30px 70px rgba(14,165,233,0.15);
+}
+.dark-mode .medi-login-card:hover {
+  box-shadow:0 30px 70px rgba(14,165,233,0.1);
+}
+
+.medi-login-card .card-header {
+  text-align:center; margin-bottom:28px;
+}
+.medi-login-card .card-header .lock-icon {
+  width:56px;height:56px;border-radius:16px;margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  font-size:24px;color:#fff;
+  box-shadow:0 8px 24px rgba(14,165,233,0.3);
+}
+.medi-login-card .card-header h2 {
+  font-family:'Outfit',sans-serif;font-size:1.6rem;font-weight:700;
+}
+.medi-login-card .card-header p {
+  font-size:0.88rem;opacity:0.6;margin-top:6px;
+}
+
+.medi-login-card .form-group {
+  margin-bottom:18px; position:relative;
+}
+.medi-login-card label {
+  display:block;font-weight:600;font-size:0.82rem;
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:6px;opacity:0.7;
+}
+.medi-login-card .input-wrap {
+  position:relative;
+}
+.medi-login-card .input-wrap .input-icon {
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:16px;opacity:0.4;pointer-events:none;
+  transition:opacity var(--transition);
+}
+.medi-login-card input[type="text"],
+.medi-login-card input[type="password"] {
+  width:100%;padding:13px 14px 13px 42px;
+  border-radius:12px;border:1.5px solid rgba(14,165,233,0.2);
+  background:rgba(255,255,255,0.6);
+  font-family:'Inter',sans-serif;font-size:0.95rem;
+  color:var(--text-light);
+  transition:all var(--transition);
+  outline:none;
+}
+.dark-mode .medi-login-card input[type="text"],
+.dark-mode .medi-login-card input[type="password"] {
+  background:rgba(30,41,59,0.6);
+  border-color:rgba(14,165,233,0.25);
+  color:var(--text-dark);
+}
+.medi-login-card input:focus {
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(14,165,233,0.15);
+}
+.medi-login-card input:focus ~ .input-icon,
+.medi-login-card .input-wrap:hover .input-icon { opacity:0.8; }
+
+.medi-login-card .form-options {
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:22px;font-size:0.85rem;
+}
+.medi-login-card .form-options label {
+  display:flex;align-items:center;gap:6px;
+  text-transform:none;letter-spacing:0;font-weight:400;cursor:pointer;
+}
+.medi-login-card .form-options a {
+  color:var(--primary);text-decoration:none;font-weight:500;
+}
+.medi-login-card .form-options a:hover { text-decoration:underline; }
+
+.medi-login-card .btn-login {
+  width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;font-family:'Inter',sans-serif;font-weight:700;
+  font-size:1rem;cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:all var(--transition);
+  box-shadow:0 8px 24px rgba(14,165,233,0.3);
+}
+.medi-login-card .btn-login:hover {
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(14,165,233,0.4);
+}
+.medi-login-card .btn-login:active { transform:translateY(0); }
+.medi-login-card .btn-login .btn-shine {
+  position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+  animation:btnShine 3s ease-in-out infinite;
+}
+@keyframes btnShine {
+  0%{left:-100%;}50%{left:100%;}100%{left:100%;}
+}
+
+.medi-login-card .divider {
+  display:flex;align-items:center;gap:12px;margin:22px 0;
+  font-size:0.8rem;opacity:0.5;text-transform:uppercase;letter-spacing:1px;
+}
+.medi-login-card .divider::before,
+.medi-login-card .divider::after {
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(14,165,233,0.3),transparent);
+}
+
+.medi-login-card .card-footer {
+  text-align:center;font-size:0.85rem;opacity:0.6;
+}
+
+/* ===== FLOATING PARTICLES ===== */
+.particle {
+  position:fixed;z-index:0;
+  border-radius:50%;pointer-events:none;
+  animation:particleFloat 15s ease-in-out infinite;
+}
+@keyframes particleFloat {
+  0%,100%{transform:translateY(0) rotate(0deg);opacity:0.3;}
+  50%{transform:translateY(-200px) rotate(180deg);opacity:0.7;}
+}
+
+/* ===== FOOTER ===== */
+.medi-footer {
+  position:fixed;bottom:0;left:0;right:0;z-index:10;
+  text-align:center;padding:14px;
+  font-size:0.78rem;opacity:0.5;
+  background:rgba(255,255,255,0.4);
+  backdrop-filter:blur(10px);
+}
+.dark-mode .medi-footer { background:rgba(15,23,42,0.4); }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .medi-content{grid-template-columns:1fr;gap:40px;max-width:480px;}
+  .medi-hero{text-align:center;}
+  .medi-hero p{margin-left:auto;margin-right:auto;}
+  .medi-hero h1{font-size:2.4rem;}
+  .medi-nav{padding:14px 20px;}
+  .medi-nav .nav-links{display:none;}
+}
+@media(max-width:500px){
+  .medi-main{padding:90px 16px 60px;}
+  .medi-login-card{padding:28px 22px;}
+  .medi-hero h1{font-size:1.9rem;}
+}

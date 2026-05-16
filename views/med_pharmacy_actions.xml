@@ -1,22 +1,65 @@
+<?xml version="1.0"?>
 <odoo>
 
-    <!-- Drug Master Action -->
+    <!-- Drug Master -->
     <record id="action_med_pharmacy_product" model="ir.actions.act_window">
         <field name="name">Drugs</field>
         <field name="res_model">med.pharmacy.product</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Pharmacy Orders Action -->
-<record id="action_med_pharmacy_order" model="ir.actions.act_window">
-    <field name="name">Pharmacy Orders</field>
-    <field name="res_model">med.pharmacy.order</field>
-    <field name="view_mode">tree,form</field>
-    <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">
-            Create a new pharmacy order here.
-        </p>
-    </field>
-</record>
+    <!-- Pharmacy Orders -->
+    <record id="action_med_pharmacy_order" model="ir.actions.act_window">
+        <field name="name">Pharmacy Orders</field>
+        <field name="res_model">med.pharmacy.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Stock Adjustment Wizard -->
+    <record id="action_med_stock_adjust" model="ir.actions.act_window">
+        <field name="name">Stock Adjustment</field>
+        <field name="res_model">med.pharmacy.adjust.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Stock Transfer Wizard -->
+    <record id="action_med_stock_transfer" model="ir.actions.act_window">
+        <field name="name">Stock Transfer</field>
+        <field name="res_model">med.pharmacy.transfer.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Low Stock Dashboard Action -->
+    <record id="action_med_pharmacy_low_stock" model="ir.actions.act_window">
+        <field name="name">Low Stock Dashboard</field>
+        <field name="res_model">med.pharmacy.product</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_is_low_stock_filter': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Zero products are currently below minimum stock levels. Great job!
+            </p>
+        </field>
+    </record>
+
+    <!-- Expiry Alert Action -->
+    <record id="action_med_pharmacy_expiry_alert" model="ir.actions.act_window">
+        <field name="name">Pharmacy Drug Alert</field>
+        <field name="res_model">med.pharmacy.batch</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">['|', ('is_expired', '=', True), ('is_expiring_soon', '=', True)]</field>
+        <field name="context">{'search_default_group_by_product': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Drugs Expiring Soon!
+            </p>
+            <p>
+                All your pharmacy batches are perfectly safe and far from expiration.
+            </p>
+        </field>
+    </record>
 
 </odoo>

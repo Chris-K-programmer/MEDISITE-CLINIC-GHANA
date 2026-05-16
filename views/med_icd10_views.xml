@@ -5,11 +5,11 @@
         <field name="name">med.icd10.tree</field>
         <field name="model">med.icd10</field>
         <field name="arch" type="xml">
-            <tree string="ICD-10 Codes">
+            <list string="ICD-10 Codes">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
-            </tree>
+            </list>
         </field>
     </record>
 

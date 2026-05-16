@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="base.main_company" model="res.company">
+        <field name="logo" type="base64" file="medisite_clinic/static/src/img/logo.png"/>
+        <field name="name">MediSite Services Ghana</field>
+    </record>
+</odoo>

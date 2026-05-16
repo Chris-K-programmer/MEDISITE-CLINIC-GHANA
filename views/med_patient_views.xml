@@ -8,67 +8,231 @@
         <field name="name">med.patient.form</field>
         <field name="model">med.patient</field>
         <field name="arch" type="xml">
-            <form string="Patient">
+            <form string="Patient" class="med_custom_patient_form o_med_patient_redesign">
                 <sheet>
-
-                    <!-- Title -->
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name"/>
-                        </h1>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+                    
+                    <!-- TOP HEADER AREA -->
+                    <div class="row align-items-center mb-4 med_top_header">
+                        <div class="col-md-3 col-lg-2 text-center">
+                            <field name="photo" widget="image" class="med_patient_photo shadow-sm" options="{'size':[120,120]}"/>
+                        </div>
+                        <div class="col-md-5 col-lg-6 oe_title">
+                            <h1 class="mb-1"><field name="name" placeholder="Patient Name"/></h1>
+                            <h2 class="mb-2 text-muted">File No: <field name="file_number" placeholder="#HC-0000-0000"/></h2>
+                            <div class="med_status_chips">
+                                <span class="med_chip med_chip_stable"><field name="status" nolabel="1"/></span>
+                                <span class="med_chip med_chip_inpatient"><field name="inpatient_status" nolabel="1"/></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-lg-4 d-flex flex-column align-items-end justify-content-center">
+                            <button name="%(action_report_patient_history)d" string="Print Patient History" type="action" class="btn btn-outline-primary med_print_btn mb-3" icon="fa-print"/>
+                            
+                            <div class="med_stat_buttons d-flex gap-2">
+                                <button name="action_view_consultations" type="object" class="btn bg-white shadow-sm med_stat_btn d-flex flex-column align-items-center justify-content-center">
+                                    <i class="fa fa-calendar text-primary mb-1 fs-5"></i>
+                                    <div class="med_stat_val fw-bold fs-5"><field name="consultation_count"/></div>
+                                    <div class="med_stat_label text-muted" style="font-size: 0.7rem;">VISITS</div>
+                                </button>
+                                <button name="action_view_ipd" type="object" class="btn bg-white shadow-sm med_stat_btn d-flex flex-column align-items-center justify-content-center">
+                                    <i class="fa fa-bed text-success mb-1 fs-5"></i>
+                                    <div class="med_stat_val fw-bold fs-5"><field name="ipd_count"/></div>
+                                    <div class="med_stat_label text-muted" style="font-size: 0.7rem;">ADMISSIONS</div>
+                                </button>
+                                <button name="action_view_invoices" type="object" class="btn bg-white shadow-sm med_stat_btn d-flex flex-column align-items-center justify-content-center">
+                                    <i class="fa fa-file-text-o text-danger mb-1 fs-5"></i>
+                                    <div class="med_stat_val fw-bold fs-5"><field name="invoice_count"/></div>
+                                    <div class="med_stat_label text-muted" style="font-size: 0.7rem;">INVOICES</div>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Patient Header -->
-                    <group col="2">
-                        <group>
-                            <field name="employee_id"/>
-                            <field name="file_number"/>
-                            <field name="dob"/>
-                            <field name="age" readonly="1"/>
-                            <field name="gender"/>
-                            <field name="nationality"/>
-                            <field name="occupation"/>
-                            <field name="employer"/>
-                        </group>
+                    <!-- MAIN LAYOUT -->
+                    <div class="row">
+                        <!-- LEFT COLUMN: Demographics & Next Appt -->
+                        <div class="col-md-4 col-lg-4">
+                            <!-- Identification & Demographics Card -->
+                            <div class="card med_info_card mb-4 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title med_card_title mb-4"><i class="fa fa-id-card-o text-primary"/> Identification &amp; Demographics</h5>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-6 med_field_group">
+                                            <label for="employee_id" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">EMPLOYEE ID</label>
+                                            <div class="med_field_value fw-bold"><field name="employee_id" nolabel="1"/></div>
+                                        </div>
+                                        <div class="col-6 med_field_group">
+                                            <label for="gender" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">GENDER</label>
+                                            <div class="med_field_value fw-bold"><field name="gender" nolabel="1"/></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-6 med_field_group">
+                                            <label for="dob" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">DATE OF BIRTH</label>
+                                            <div class="med_field_value fw-bold"><field name="dob" nolabel="1"/></div>
+                                        </div>
+                                        <div class="col-6 med_field_group">
+                                            <label for="age" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">AGE</label>
+                                            <div class="med_field_value fw-bold"><field name="age" readonly="1" nolabel="1"/> Years</div>
+                                        </div>
+                                    </div>
 
-                        <group>
-                            <field name="photo"
-                                   widget="image"
-                                   class="oe_avatar"
-                                   options="{'size':[180,180]}"/>
-                        </group>
-                    </group>
+                                    <div class="row mb-3">
+                                        <div class="col-6 med_field_group">
+                                            <label for="nationality" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">NATIONALITY</label>
+                                            <div class="med_field_value fw-bold"><field name="nationality" nolabel="1"/></div>
+                                        </div>
+                                        <div class="col-6 med_field_group">
+                                            <label for="occupation" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">OCCUPATION</label>
+                                            <div class="med_field_value fw-bold"><field name="occupation" nolabel="1"/></div>
+                                        </div>
+                                    </div>
 
-                    <!-- Tabs -->
-                    <notebook>
+                                    <div class="row">
+                                        <div class="col-12 med_field_group">
+                                            <label for="employer" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">EMPLOYER</label>
+                                            <div class="med_field_value fw-bold"><field name="employer" nolabel="1"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <!-- CONSULTATIONS -->
-                        <page string="Consultations">
-                            <field name="consultation_ids" nolabel="1">
-                                <tree>
-                                    <field name="date"/>
-                                    <field name="patient_name"/>
-                                    <field name="state"/>
-                                    <field name="treating_hcp_id"/>
-                                </tree>
-                            </field>
-                        </page>
+                            <!-- Next Appointment Card -->
+                            <div class="card med_appointment_card border-0 shadow-sm" style="background-color: #0b3d91; border-radius: 12px;">
+                                <div class="card-body text-white p-4">
+                                    <h6 class="med_appt_title text-uppercase mb-3" style="font-size: 0.8rem; letter-spacing: 1px; color: rgba(255,255,255,0.8);">NEXT APPOINTMENT</h6>
+                                    <div class="d-flex align-items-center">
+                                        <div class="med_appt_date_box text-center me-3 p-2" style="background-color: rgba(255,255,255,0.15); border-radius: 8px; min-width: 60px;">
+                                            <div class="med_appt_day fs-4 fw-bold lh-1"><field name="next_appointment_date" widget="date" options="{'format': 'dd'}" nolabel="1"/></div>
+                                            <div class="med_appt_month text-uppercase" style="font-size: 0.75rem;"><field name="next_appointment_date" widget="date" options="{'format': 'MMM'}" nolabel="1"/></div>
+                                        </div>
+                                        <div class="med_appt_details">
+                                            <div class="med_appt_type fw-bold fs-6"><field name="next_appointment_type" nolabel="1" placeholder="Type"/></div>
+                                            <div class="med_appt_doctor" style="font-size: 0.85rem; color: rgba(255,255,255,0.9);">
+                                                <field name="next_appointment_doctor" nolabel="1" placeholder="Doctor"/> • 
+                                                <field name="next_appointment_date" widget="time" nolabel="1"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                        <!-- IPD -->
-                        <page string="IPD Admissions">
-                            <field name="ipd_ids" nolabel="1">
-                                <tree>
-                                    <field name="name"/>
-                                    <field name="admission_date"/>
-                                    <field name="discharge_date"/>
-                                    <field name="room_number"/>
-                                    <field name="bed_number"/>
-                                    <field name="state"/>
-                                </tree>
-                            </field>
-                        </page>
+                        <!-- RIGHT COLUMN: Tabs -->
+                        <div class="col-md-8 col-lg-8">
+                            <notebook class="med_notebook_redesign bg-white rounded shadow-sm border-0 h-100">
+                                <!-- CONSULTATIONS -->
+                                <page string="Consultations" class="p-3">
+                                    <field name="consultation_ids" nolabel="1" class="med_table_field">
+                                        <list>
+                                            <field name="date" string="DATE"/>
+                                            <field name="working_diagnosis" string="CONSULTATION TYPE"/>
+                                            <field name="treating_hcp_id" string="HEALTHCARE PRACTITIONER (HCP)"/>
+                                            <field name="state" string="STATE" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'nurse'" decoration-muted="state == 'cancel'"/>
+                                        </list>
+                                    </field>
+                                </page>
 
-                    </notebook>
+                                <!-- IPD -->
+                                <page string="IPD Admissions" class="p-3">
+                                    <field name="ipd_ids" nolabel="1" class="med_table_field">
+                                        <list>
+                                            <field name="name"/>
+                                            <field name="admission_date"/>
+                                            <field name="discharge_date"/>
+                                            <field name="room_number"/>
+                                            <field name="bed_number"/>
+                                            <field name="state"/>
+                                        </list>
+                                    </field>
+                                </page>
+
+                                <!-- MEDICAL HISTORY -->
+                                <page string="Medical History" class="p-3">
+                                    <group>
+                                        <field name="id" widget="medisite_vitals_chart" nolabel="1"/>
+                                    </group>
+                                </page>
+
+                                <!-- TIMELINE -->
+                                <page string="Timeline" class="p-3">
+                                    <div class="o_medisite_timeline">
+                                        <field name="consultation_ids" mode="list,kanban" nolabel="1" readonly="1">
+                                            <list create="0" delete="0" edit="0">
+                                                <field name="date" string="Visit Date"/>
+                                                <field name="treating_hcp_id" string="HCP"/>
+                                                <field name="working_diagnosis" string="Diagnosis"/>
+                                                <field name="treatment_plan" string="Plan"/>
+                                                <field name="state" widget="badge" decoration-info="state == 'nurse'" decoration-success="state == 'done'" decoration-warning="state in ('doctor','lab')"/>
+                                            </list>
+                                        </field>
+                                    </div>
+                                </page>
+                            </notebook>
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM VITALS AREA -->
+                    <div class="row mt-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="card med_vital_card border-0 shadow-sm" style="border-left: 4px solid #0b3d91 !important; border-radius: 8px;">
+                                <div class="card-body p-3">
+                                    <div class="med_vital_title text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;">BLOOD PRESSURE</div>
+                                    <div class="med_vital_value mt-1" style="color: #0b3d91;">
+                                        <span class="fs-2 fw-bold"><field name="blood_pressure" nolabel="1"/></span>
+                                        <span class="med_vital_unit text-muted ms-1" style="font-size: 0.8rem;">mmHg</span>
+                                    </div>
+                                    <div class="w-100 bg-light mt-2" style="height: 4px; border-radius: 2px;">
+                                        <div class="bg-primary h-100" style="width: 80%; border-radius: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card med_vital_card border-0 shadow-sm" style="border-left: 4px solid #10b981 !important; border-radius: 8px;">
+                                <div class="card-body p-3">
+                                    <div class="med_vital_title text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;">HEART RATE</div>
+                                    <div class="med_vital_value mt-1" style="color: #10b981;">
+                                        <span class="fs-2 fw-bold"><field name="heart_rate" nolabel="1"/></span>
+                                        <span class="med_vital_unit text-muted ms-1" style="font-size: 0.8rem;">BPM</span>
+                                    </div>
+                                    <div class="w-100 bg-light mt-2" style="height: 4px; border-radius: 2px;">
+                                        <div class="bg-success h-100" style="width: 60%; border-radius: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card med_vital_card border-0 shadow-sm" style="border-left: 4px solid #334155 !important; border-radius: 8px;">
+                                <div class="card-body p-3">
+                                    <div class="med_vital_title text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;">BLOOD OXYGEN</div>
+                                    <div class="med_vital_value mt-1" style="color: #334155;">
+                                        <span class="fs-2 fw-bold"><field name="blood_oxygen" nolabel="1"/></span>
+                                        <span class="med_vital_unit text-muted ms-1" style="font-size: 0.8rem;">% SpO2</span>
+                                    </div>
+                                    <div class="w-100 bg-light mt-2" style="height: 4px; border-radius: 2px;">
+                                        <div class="bg-dark h-100" style="width: 95%; border-radius: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card med_vital_card border-0 shadow-sm" style="border-left: 4px solid #ef4444 !important; border-radius: 8px;">
+                                <div class="card-body p-3">
+                                    <div class="med_vital_title text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;">BLOOD GLUCOSE</div>
+                                    <div class="med_vital_value mt-1" style="color: #ef4444;">
+                                        <span class="fs-2 fw-bold"><field name="blood_glucose" nolabel="1"/></span>
+                                        <span class="med_vital_unit text-muted ms-1" style="font-size: 0.8rem;">mg/dL</span>
+                                    </div>
+                                    <div class="w-100 bg-light mt-2" style="height: 4px; border-radius: 2px;">
+                                        <div class="bg-danger h-100" style="width: 70%; border-radius: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </sheet>
             </form>
@@ -79,10 +243,10 @@
          PATIENT LIST
     ========================== -->
     <record id="view_med_patient_tree" model="ir.ui.view">
-        <field name="name">med.patient.tree</field>
+        <field name="name">med.patient.list</field>
         <field name="model">med.patient</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="photo"
                        widget="image"
                        class="oe_avatar o_list_avatar"
@@ -93,7 +257,7 @@
                 <field name="file_number"/>
                 <field name="age"/>
                 <field name="gender"/>
-            </tree>
+            </list>
         </field>
     </record>
 

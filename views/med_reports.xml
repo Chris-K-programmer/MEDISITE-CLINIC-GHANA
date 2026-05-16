@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- 1. Daily Attendance (Pivot View for med.consultation) -->
+    <record id="view_med_consultation_pivot" model="ir.ui.view">
+        <field name="name">med.consultation.pivot</field>
+        <field name="model">med.consultation</field>
+        <field name="arch" type="xml">
+            <pivot string="Daily Attendance" display_quantity="true">
+                <field name="create_date" type="row" interval="day"/>
+                <field name="treating_hcp_id" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- 2. Expired / Expiring Drugs (Tree View for med.pharmacy.batch) -->
+    <record id="view_med_pharmacy_batch_tree" model="ir.ui.view">
+        <field name="name">med.pharmacy.batch.tree</field>
+        <field name="model">med.pharmacy.batch</field>
+        <field name="arch" type="xml">
+            <list string="Drug Batches" decoration-danger="expiry_date &lt; current_date" decoration-warning="expiry_date &lt;= (context_today() + datetime.timedelta(days=30)).strftime('%Y-%m-%d') and expiry_date &gt;= current_date">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="expiry_date"/>
+                <field name="cost_price"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- 3. Stock Balance (Pivot View for med.pharmacy.stock) -->
+    <record id="view_med_pharmacy_stock_pivot" model="ir.ui.view">
+        <field name="name">med.pharmacy.stock.pivot</field>
+        <field name="model">med.pharmacy.stock</field>
+        <field name="arch" type="xml">
+            <pivot string="Stock Balance" display_quantity="true">
+                <field name="location_id" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- 4. Consumption Report (Pivot View for med.pharmacy.move) -->
+    <record id="view_med_pharmacy_move_pivot" model="ir.ui.view">
+        <field name="name">med.pharmacy.move.pivot</field>
+        <field name="model">med.pharmacy.move</field>
+        <field name="arch" type="xml">
+            <pivot string="Consumption Report" display_quantity="true">
+                <field name="create_date" type="row" interval="month"/>
+                <field name="product_id" type="row"/>
+                <field name="move_type" type="col"/>
+                <field name="quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ACTIONS -->
+    <record id="action_report_daily_attendance" model="ir.actions.act_window">
+        <field name="name">Daily Attendance</field>
+        <field name="res_model">med.consultation</field>
+        <field name="view_mode">pivot,list,form</field>
+        <field name="context">{'search_default_today': 1}</field>
+    </record>
+
+    <record id="action_report_stock_balance" model="ir.actions.act_window">
+        <field name="name">Stock Balance</field>
+        <field name="res_model">med.pharmacy.stock</field>
+        <field name="view_mode">pivot,list,form</field>
+    </record>
+
+    <record id="action_report_consumption" model="ir.actions.act_window">
+        <field name="name">Consumption Report</field>
+        <field name="res_model">med.pharmacy.move</field>
+        <field name="view_mode">pivot,list,form</field>
+    </record>
+
+    <!-- MENUS -->
+    <!-- Create a top-level Reports Menu -->
+    <menuitem id="menu_med_reports_root"
+              name="Reports"
+              parent="medisite_root"
+              sequence="40"/>
+
+    <menuitem id="menu_report_daily_attendance"
+              name="Daily Attendance"
+              parent="menu_med_reports_root"
+              action="action_report_daily_attendance"
+              sequence="10"/>
+
+    <menuitem id="menu_report_stock_balance"
+              name="Stock Balance"
+              parent="menu_med_reports_root"
+              action="action_report_stock_balance"
+              sequence="30"/>
+
+    <menuitem id="menu_report_consumption"
+              name="Consumption Report"
+              parent="menu_med_reports_root"
+              action="action_report_consumption"
+              sequence="40"/>
+
+    <menuitem id="menu_pharmacy_expiry_alert"
+              name="Pharmacy Drug Alert"
+              parent="menu_med_reports_root"
+              action="action_med_pharmacy_expiry_alert"
+              sequence="20"/>
+
+</odoo>

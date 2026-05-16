@@ -8,3 +8,10 @@ from . import med_pharmacy_stock_move
 from . import med_ipd
 from . import med_ipd_rounds
 from . import med_icd10
+from . import pharmacy_batch
+from . import pharmacy_location
+from . import pharmacy_stock
+from . import pharmacy_product_ext
+from . import med_pharmacy_move
+from . import med_pharmacy_adjust_wizard
+from . import med_pharmacy_transfer_wizard

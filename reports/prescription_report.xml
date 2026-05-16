@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_med_prescription" model="ir.actions.report">
+        <field name="name">Prescription</field>
+        <field name="model">med.consultation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">medisite_clinic.report_prescription</field>
+        <field name="report_file">medisite_clinic.report_prescription</field>
+        <field name="print_report_name">'Prescription_%s' % (object.patient_name)</field>
+        <field name="binding_model_id" ref="model_med_consultation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- QWeb Template -->
+    <template id="report_prescription">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <div class="row mt32 mb32">
+                            <div class="col-12 text-center">
+                                <h1 style="color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Prescription</h1>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h4><strong>Patient Details</strong></h4>
+                                <p>
+                                    <strong>Name:</strong> <t t-esc="doc.patient_name"/><br/>
+                                    <strong>File No:</strong> <t t-esc="doc.file_number"/><br/>
+                                    <strong>Gender:</strong> <t t-esc="doc.patient_id.gender"/><br/>
+                                    <strong>Age:</strong> <t t-esc="doc.patient_id.age"/>
+                                </p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <h4><strong>Consultation Info</strong></h4>
+                                <p>
+                                    <strong>Date:</strong> <t t-esc="doc.date.strftime('%d-%m-%Y')"/><br/>
+                                    <strong>HCP:</strong> <t t-esc="doc.treating_hcp_id.name"/><br/>
+                                    <strong>Prescription Date:</strong> <t t-esc="doc.prescription_date" t-options='{"widget": "datetime"}'/>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mt32" t-if="doc.weight or doc.temp or doc.bp">
+                            <div class="col-12">
+                                <h4 style="background-color: #f8f9fa; padding: 5px;">Clinical Observations</h4>
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <td><strong>Weight:</strong> <t t-esc="doc.weight"/> kg</td>
+                                        <td><strong>Temp:</strong> <t t-esc="doc.temp"/> °C</td>
+                                        <td><strong>BP:</strong> <t t-esc="doc.bp"/></td>
+                                        <td><strong>HR:</strong> <t t-esc="doc.hr"/> bpm</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="row mt32">
+                            <div class="col-12">
+                                <h4 style="background-color: #f8f9fa; padding: 5px;">Diagnosis</h4>
+                                <p>
+                                    <t t-if="doc.icd10_id">
+                                        <strong>[<t t-esc="doc.icd10_id.code"/>]</strong> <t t-esc="doc.icd10_id.name"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="doc.working_diagnosis"/>
+                                    </t>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mt32">
+                            <div class="col-12">
+                                <h4 style="background-color: #f8f9fa; padding: 5px;">Medication &amp; Treatment Plan</h4>
+                                <div style="min-height: 200px; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px;">
+                                    <t t-if="doc.medication_line_ids">
+                                        <table class="table table-sm mt16">
+                                            <thead>
+                                                <tr>
+                                                    <th>Drug/Product</th>
+                                                    <th class="text-center">Qty</th>
+                                                    <th>Dosage / Instructions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="doc.medication_line_ids" t-as="line">
+                                                    <td><t t-esc="line.product_id.name"/></td>
+                                                    <td class="text-center"><t t-esc="line.quantity"/></td>
+                                                    <td><t t-esc="line.dosage_instructions"/></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </t>
+                                    <t t-else="">
+                                        <p>No medication prescribed.</p>
+                                    </t>
+                                    <hr/>
+                                    <p><strong>Instructions / Plan:</strong><br/>
+                                    <t t-esc="doc.treatment_plan"/></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt32">
+                            <div class="col-12 col-offset-8 text-end">
+                                <p><strong>Doctor's Signature:</strong></p>
+                                <div t-if="doc.signature">
+                                    <img t-att-src="image_data_uri(doc.signature)" style="max-height: 80px;"/>
+                                </div>
+                                <div t-else="">
+                                    <div style="height: 80px; width: 150px; border-bottom: 1px solid black; display: inline-block;"></div>
+                                </div>
+                                <p>
+                                    <t t-esc="doc.treating_hcp_id.name"/><br/>
+                                    <t t-esc="doc.date_signed" t-options='{"widget": "datetime"}'/>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

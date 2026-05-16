@@ -13,33 +13,46 @@
                     <button name="action_dispense"
                             type="object"
                             string="Dispense"
-                            states="draft"
+                            invisible="state != 'draft'"
                             class="btn-primary"/>
 
                     <button name="action_mark_paid"
                             type="object"
                             string="Mark Paid"
-                            states="dispensed"
+                            invisible="state != 'dispensed'"
                             class="btn-success"/>
+
+                    <button name="action_create_invoice"
+                            type="object"
+                            string="Create Invoice"
+                            class="btn-primary"
+                            invisible="invoice_id or state == 'draft'"/>
 
                     <field name="state" widget="statusbar"/>
                 </header>
 
                 <!-- ================= BODY ================= -->
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-money" invisible="not invoice_id">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                    </div>
                     <group>
                         <field name="consultation_id" readonly="1"/>
                         <field name="patient_id" readonly="1"/>
                         <field name="pharmacist_id" readonly="1"/>
                     </group>
 
-                    <field name="line_ids" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
-                        <tree editable="bottom">
-                            <field name="product_id"/>
+                    <field name="line_ids" nolabel="1" readonly="state != 'draft'">
+                        <list editable="bottom">
+                            <field name="product_id" readonly="1"/>
+                            <field name="batch_id" required="1"/>
+                            <field name="location_id" required="1"/>
                             <field name="quantity"/>
                             <field name="unit_price"/>
                             <field name="subtotal" readonly="1"/>
-                        </tree>
+                        </list>
                     </field>
 
                     <group>
@@ -53,17 +66,17 @@
 
     <!-- ================= PHARMACY ORDER TREE ================= -->
     <record id="view_med_pharmacy_order_tree" model="ir.ui.view">
-        <field name="name">med.pharmacy.order.tree</field>
+        <field name="name">med.pharmacy.order.list</field>
         <field name="model">med.pharmacy.order</field>
         <field name="arch" type="xml">
-            <tree string="Pharmacy Orders">
+            <list string="Pharmacy Orders">
                 <field name="name"/>
                 <field name="consultation_id"/>
                 <field name="patient_id"/>
                 <field name="pharmacist_id"/>
                 <field name="amount_total"/>
                 <field name="state"/>
-            </tree>
+            </list>
         </field>
     </record>
 

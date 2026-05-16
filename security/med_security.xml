@@ -1,28 +1,59 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="group_med_nurse" model="res.groups">
-        <field name="name">Medisite Nurse</field>
-    </record>
+    <data>
+        <!-- MODULE CATEGORY -->
+        <record id="module_category_medisite" model="ir.module.category">
+            <field name="name">MediSite Clinic</field>
+            <field name="description">Management of Clinic Staff, Patients, and Consultations</field>
+            <field name="sequence">10</field>
+        </record>
 
-    <record id="group_med_lab" model="res.groups">
-        <field name="name">Medisite Lab Technician</field>
-    </record>
+        <!-- PRIVILEGE: Staff Access -->
+        <record id="privilege_medisite_access" model="res.groups.privilege">
+            <field name="name">Access Rights</field>
+            <field name="description">Determine the role of the medical staff member.</field>
+            <field name="category_id" ref="medisite_clinic.module_category_medisite"/>
+            <field name="sequence">1</field>
+        </record>
 
-    <record id="group_med_doctor" model="res.groups">
-        <field name="name">Medisite Doctor</field>
-    </record>
+        <!-- GROUPS -->
+        <record id="group_med_nurse" model="res.groups">
+            <field name="name">Nurse</field>
+            <field name="privilege_id" ref="medisite_clinic.privilege_medisite_access"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
 
-    <record id="group_med_admin" model="res.groups">
-        <field name="name">Medisite Admin</field>
-        <field name="category_id" ref="base.module_category_administration"/>
-    </record>
+        <record id="group_med_lab" model="res.groups">
+            <field name="name">Lab Technician</field>
+            <field name="privilege_id" ref="medisite_clinic.privilege_medisite_access"/>
+            <field name="implied_ids" eval="[(4, ref('medisite_clinic.group_med_nurse'))]"/>
+        </record>
 
-    <record id="group_med_pharmacy" model="res.groups">
-        <field name="name">Medisite Pharmacy</field>
-        <field name="category_id" ref="base.module_category_administration"/>
-    </record>
+        <record id="group_med_doctor" model="res.groups">
+            <field name="name">Doctor</field>
+            <field name="privilege_id" ref="medisite_clinic.privilege_medisite_access"/>
+            <field name="implied_ids" eval="[(4, ref('medisite_clinic.group_med_nurse'))]"/>
+        </record>
 
+        <record id="group_med_pharmacy" model="res.groups">
+            <field name="name">Pharmacy</field>
+            <field name="privilege_id" ref="medisite_clinic.privilege_medisite_access"/>
+            <field name="implied_ids" eval="[(4, ref('medisite_clinic.group_med_nurse'))]"/>
+        </record>
 
+        <record id="group_med_paramedic" model="res.groups">
+            <field name="name">Paramedic</field>
+            <field name="privilege_id" ref="medisite_clinic.privilege_medisite_access"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_med_admin" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="privilege_id" ref="medisite_clinic.privilege_medisite_access"/>
+            <field name="implied_ids" eval="[(4, ref('medisite_clinic.group_med_doctor')), 
+                                            (4, ref('medisite_clinic.group_med_lab')), 
+                                            (4, ref('medisite_clinic.group_med_pharmacy')),
+                                            (4, ref('medisite_clinic.group_med_paramedic'))]"/>
+        </record>
+    </data>
 </odoo>
-
-

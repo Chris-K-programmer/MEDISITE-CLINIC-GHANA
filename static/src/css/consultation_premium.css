@@ -1,0 +1,69 @@
+/* STABLE PREMIUM CONSULTATION STYLES (ODOO 19 COMPATIBLE) */
+
+.o_med_consultation_redesign {
+    .o_form_sheet {
+        background-color: #f8fafc !important;
+        border: none !important;
+        box-shadow: none !important;
+        max-width: 100% !important;
+        padding: 20px !important;
+    }
+
+    /* Hero Header */
+    .card {
+        border-radius: 15px;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .med_consult_stepper {
+        border-radius: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Field Styling */
+    .o_field_widget {
+        margin-bottom: 0px !important;
+    }
+
+    .form-control {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Vitals & Labs sidebar */
+    .card-header {
+        background-color: transparent !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        padding-bottom: 10px !important;
+    }
+
+    .badge {
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    /* Notebook adjustments */
+    .nav-tabs {
+        border-bottom: 2px solid #f1f5f9;
+        margin-bottom: 20px;
+    }
+
+    .nav-link {
+        font-weight: 700;
+        color: #64748b;
+        border: none !important;
+        padding: 12px 20px !important;
+    }
+
+    .nav-link.active {
+        color: #3b82f6 !important;
+        background: transparent !important;
+        border-bottom: 3px solid #3b82f6 !important;
+    }
+}

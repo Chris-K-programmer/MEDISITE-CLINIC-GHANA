@@ -5,34 +5,47 @@
         <field name="name">med.staff.form</field>
         <field name="model">med.staff</field>
         <field name="arch" type="xml">
-            <form string="Medical Staff">
+            <form string="Medical Staff" class="med_custom_staff_form">
 
                 <header>
                     <button name="action_create_user"
                             type="object"
                             string="Create Login"
                             class="btn-primary"
-                            attrs="{'invisible':[('user_id','!=',False)]}"/>
+                            invisible="user_id"/>
                 </header>
 
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_user"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-user"
+                                invisible="not user_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Linked User</span>
+                                <span class="o_stat_value"><field name="user_id" readonly="1" options="{'no_open': True}"/></span>
+                            </div>
+                        </button>
+                    </div>
 
                     <div class="oe_title">
                         <h1>
-                            <field name="name"/>
+                            <field name="name" placeholder="Staff Name"/>
                         </h1>
+                        <h2>
+                            <field name="job_title" placeholder="Job Title"/>
+                        </h2>
                     </div>
 
-                    <group col="4">
-                        <group col="2">
-                            <field name="employee_id"/>
-                            <field name="role"/>
-                            <field name="job_title"/>
-                            <field name="department"/>
-                            <field name="user_id" readonly="1"/>
-                        </group>
-
+                    <group>
                         <group>
+                            <field name="role"/>
+                            <field name="department"/>
+                            <field name="employee_id"/>
+                        </group>
+                        <group>
+                            <field name="password" password="True" invisible="user_id" required="not user_id"/>
                             <field name="image"
                                    widget="image"
                                    class="oe_avatar"
@@ -41,14 +54,46 @@
                     </group>
 
                     <notebook>
-                        <page string="Contact">
+                        <page string="Personal Information">
                             <group>
-                                <field name="phone"/>
-                                <field name="email"/>
+                                <group>
+                                    <field name="dob"/>
+                                    <field name="gender"/>
+                                </group>
+                                <group>
+                                    <field name="emergency_contact"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Professional Details">
+                            <group>
+                                <group>
+                                    <field name="hire_date"/>
+                                    <field name="qualification"/>
+                                </group>
+                                <group>
+                                    <field name="license_number"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Contact Info">
+                            <group>
+                                <group>
+                                    <field name="phone"/>
+                                    <field name="mobile"/>
+                                    <field name="email"/>
+                                </group>
+                                <group>
+                                    <field name="address"/>
+                                    <field name="city"/>
+                                    <field name="state_id"/>
+                                    <field name="country_id"/>
+                                </group>
                             </group>
                         </page>
                     </notebook>
-
                 </sheet>
             </form>
         </field>

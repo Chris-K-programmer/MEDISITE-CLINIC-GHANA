@@ -12,6 +12,25 @@ class MedICD10(models.Model):
     _sql_constraints = [
         ('code_unique', 'unique(code)', 'ICD-10 code must be unique!')
     ]
+class MedConsultationMedicationLine(models.Model):
+    _name = 'med.consultation.medication.line'
+    _description = 'Consultation Medication Line'
+
+    consultation_id = fields.Many2one('med.consultation', required=True, ondelete='cascade')
+    product_id = fields.Many2one('med.pharmacy.product', required=True, string='Drug/Product', domain="[('active', '=', True)]")
+    quantity = fields.Float(string='Quantity', default=1.0, required=True)
+    dosage = fields.Char(string='Dosage')
+    route = fields.Selection([
+        ('oral', 'Oral'),
+        ('iv', 'IV'),
+        ('im', 'IM'),
+        ('sc', 'SC'),
+        ('topical', 'Topical'),
+        ('inhalation', 'Inhalation'),
+    ], string='Route', default='oral')
+    frequency = fields.Char(string='Frequency')
+    dosage_instructions = fields.Char(string='Dosage / Instructions')
+
 
 
 class MedConsultation(models.Model):
@@ -26,12 +45,21 @@ class MedConsultation(models.Model):
     patient_id = fields.Many2one('med.patient', required=True)
     file_number = fields.Char(related='patient_id.file_number', store=True)
     patient_name = fields.Char(related='patient_id.name', store=True)
+    patient_image = fields.Binary(related='patient_id.photo', string='Patient Photo', readonly=True)
+    gender = fields.Selection(related='patient_id.gender', string='Gender', readonly=True)
+    age = fields.Integer(related='patient_id.age', string='Age', readonly=True)
 
     pharmacy_order_id = fields.Many2one(
         'med.pharmacy.order',
         string='Pharmacy Order',
         readonly=True,
         copy=False
+    )
+
+    medication_line_ids = fields.One2many(
+        'med.consultation.medication.line',
+        'consultation_id',
+        string='Prescription Lines'
     )
 
     external_document_ids = fields.Many2many(
@@ -102,7 +130,12 @@ class MedConsultation(models.Model):
     # ---------------------------------------------------------
     # LAB / SIDE ROOM (LAB TECH)
     # ---------------------------------------------------------
-    malaria_rdt = fields.Selection([('pos', 'Positive'), ('neg', 'Negative')])
+    malaria_rdt = fields.Selection([
+        ('positive', 'Positive'), 
+        ('negative', 'Negative'),
+        ('pos', 'Positive'), 
+        ('neg', 'Negative')
+    ], string="Malaria RDT")
     malaria_strain = fields.Selection([('pf', 'P. falciparum'), ('pan', 'Pan'), ('other', 'Other')])
     blood_glucose = fields.Float()
 
@@ -117,9 +150,9 @@ class MedConsultation(models.Model):
     urinalysis_bil = fields.Char()
     urinalysis_ery = fields.Char()
 
-    myoglobin = fields.Selection([('pos', 'Positive'), ('neg', 'Negative')])
-    ck_mb = fields.Selection([('pos', 'Positive'), ('neg', 'Negative')])
-    troponin = fields.Selection([('pos', 'Positive'), ('neg', 'Negative')])
+    myoglobin = fields.Selection([('positive', 'Positive'), ('negative', 'Negative'), ('pos', 'Positive'), ('neg', 'Negative')])
+    ck_mb = fields.Selection([('positive', 'Positive'), ('negative', 'Negative'), ('pos', 'Positive'), ('neg', 'Negative')])
+    troponin = fields.Selection([('positive', 'Positive'), ('negative', 'Negative'), ('pos', 'Positive'), ('neg', 'Negative')])
 
     ecg = fields.Text()
     other_side_room = fields.Text()
@@ -229,6 +262,18 @@ class MedConsultation(models.Model):
     # ---------------------------------------------------------
     # WORKFLOW ACTIONS
     # ---------------------------------------------------------
+    def action_search_icd(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Search ICD-10',
+            'res_model': 'med.icd10',
+            'view_mode': 'list',
+            'target': 'new',
+        }
+
+    def action_add_medicine(self):
+        return True
+
     def action_send_to_doctor(self):
         for rec in self:
             if rec.state != 'nurse':

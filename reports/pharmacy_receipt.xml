@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <!-- Report Action -->
-    <report
-        id="report_pharmacy_receipt"
-        model="med.pharmacy.order"
-        string="Pharmacy Receipt"
-        report_type="qweb-pdf"
-        name="medisite_clinic.report_pharmacy_receipt"
-        file="medisite_clinic.report_pharmacy_receipt"
-        print_report_name="'Pharmacy_Receipt_%s' % (object.name)"
-    />
+    <record id="action_report_pharmacy_receipt" model="ir.actions.report">
+        <field name="name">Pharmacy Receipt</field>
+        <field name="model">med.pharmacy.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">medisite_clinic.report_pharmacy_receipt</field>
+        <field name="report_file">medisite_clinic.report_pharmacy_receipt</field>
+        <field name="print_report_name">'Pharmacy_Receipt_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_med_pharmacy_order"/>
+        <field name="binding_type">report</field>
+    </record>
 
     <!-- QWeb Template -->
     <template id="report_pharmacy_receipt">
