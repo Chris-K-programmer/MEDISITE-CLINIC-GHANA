@@ -13,6 +13,8 @@ class MedPatient(models.Model):
     nationality = fields.Char()
     occupation = fields.Char()
     employer = fields.Char()
+    company_name = fields.Char(string='Company Name')
+    department = fields.Char(string='Department')
     partner_id = fields.Many2one('res.partner', string="Contact Record", ondelete='restrict')
 
     @api.model_create_multi

@@ -176,6 +176,20 @@
                                                 <field name="employer" class="d-block" readonly="1"/>
                                             </div>
                                         </div>
+                                        <div class="med_demo_chip" invisible="not company_name">
+                                            <i class="fa fa-industry" style="color:rgba(255,255,255,0.6); font-size:0.75rem;"/>
+                                            <div>
+                                                <span class="small">Company</span>
+                                                <field name="company_name" class="d-block" readonly="1"/>
+                                            </div>
+                                        </div>
+                                        <div class="med_demo_chip" invisible="not department">
+                                            <i class="fa fa-sitemap" style="color:rgba(255,255,255,0.6); font-size:0.75rem;"/>
+                                            <div>
+                                                <span class="small">Department</span>
+                                                <field name="department" class="d-block" readonly="1"/>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-end">
@@ -528,6 +542,41 @@
                                             <field name="dosage_instructions"/>
                                         </list>
                                     </field>
+                                </page>
+
+                                <!-- TAB 5: BILLING & SPONSORSHIP -->
+                                <page string="Billing &amp; Sponsorship" class="p-3">
+                                    <h5 class="fw-bold mb-4 border-bottom pb-2 text-primary">
+                                        <i class="fa fa-money me-2"/>Consultation Billing (Ghana Cedis - GHS)
+                                    </h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="p-3 border rounded-3 bg-light">
+                                                <group>
+                                                    <field name="currency_id" invisible="1"/>
+                                                    <field name="bill_to" widget="radio" readonly="invoice_id != False"/>
+                                                    <field name="sponsor_company_id" invisible="bill_to != 'company'" required="bill_to == 'company'" options="{'no_create': True}" readonly="invoice_id != False"/>
+                                                    <field name="consultation_fee" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="invoice_id != False"/>
+                                                </group>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 border rounded-3 d-flex flex-column align-items-center justify-content-center bg-white h-100 shadow-sm">
+                                                <div class="mb-3 text-center">
+                                                    <span class="small text-muted fw-bold d-block mb-1">Billing Status</span>
+                                                    <field name="bill_status" widget="badge" decoration-success="bill_status == 'billed'" decoration-warning="bill_status == 'draft'" class="fs-6"/>
+                                                </div>
+                                                <div class="text-center" invisible="invoice_id">
+                                                    <button name="action_create_company_bill" type="object" string="Generate Bill (GHS)" class="btn btn-primary btn-lg mt-2" icon="fa-file-text-o"/>
+                                                    <p class="small text-muted mt-2 mb-0">This will generate a customer invoice in Ghana Cedis (GHS) for the consultation and any prescribed medications.</p>
+                                                </div>
+                                                <div class="text-center" invisible="not invoice_id">
+                                                    <field name="invoice_id" class="fw-bold text-success fs-5 d-block mb-2"/>
+                                                    <button name="action_view_company_bill" type="object" string="View Invoice" class="btn btn-outline-success" icon="fa-eye"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </page>
                             </notebook>
                         </div>

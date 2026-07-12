@@ -95,6 +95,8 @@ class MedConsultation(models.Model):
     nationality = fields.Char()
     occupation = fields.Char()
     employer = fields.Char()
+    company_name = fields.Char(string='Company Name')
+    department = fields.Char(string='Department')
 
     # ---------------------------------------------------------
     # HISTORY (NURSE)
@@ -236,6 +238,100 @@ class MedConsultation(models.Model):
     last_updated_by = fields.Many2one('res.users', readonly=True)
 
     # ---------------------------------------------------------
+    # BILLING & CORPORATE SPONSORSHIP (GHS)
+    # ---------------------------------------------------------
+    currency_id = fields.Many2one('res.currency', string='Currency', compute='_compute_currency_id', store=True, readonly=False)
+    bill_to = fields.Selection([
+        ('individual', 'Individual Patient'),
+        ('company', 'Corporate Company / Employer')
+    ], string='Bill To', default='individual', tracking=True)
+    sponsor_company_id = fields.Many2one('res.partner', string='Company to Bill', domain="[('is_company', '=', True)]", tracking=True)
+    consultation_fee = fields.Monetary(string='Consultation Fee', currency_field='currency_id', default=100.0)
+    bill_status = fields.Selection([
+        ('draft', 'Not Billed'),
+        ('billed', 'Billed'),
+    ], string='Billing Status', default='draft', compute='_compute_bill_status', store=True)
+    invoice_id = fields.Many2one('account.move', string='Generated Invoice', readonly=True, copy=False)
+
+    @api.depends('patient_id')
+    def _compute_currency_id(self):
+        ghs = self.env['res.currency'].search([('name', '=', 'GHS')], limit=1)
+        for rec in self:
+            rec.currency_id = ghs.id if ghs else self.env.user.company_id.currency_id.id
+
+    @api.depends('invoice_id', 'invoice_id.state')
+    def _compute_bill_status(self):
+        for rec in self:
+            if rec.invoice_id:
+                rec.bill_status = 'billed'
+            else:
+                rec.bill_status = 'draft'
+
+    def action_create_company_bill(self):
+        self.ensure_one()
+        if self.invoice_id:
+            return self.action_view_company_bill()
+
+        # Determine billing partner
+        if self.bill_to == 'company':
+            if not self.sponsor_company_id:
+                raise UserError("Please specify the Company to Bill.")
+            partner = self.sponsor_company_id
+        else:
+            if not self.patient_id.partner_id:
+                self.patient_id._ensure_partner()
+            partner = self.patient_id.partner_id
+
+        # Prepare invoice lines
+        invoice_line_vals = []
+        
+        # 1. Consultation Fee
+        if self.consultation_fee > 0:
+            invoice_line_vals.append((0, 0, {
+                'name': f"Consultation Fee - {self.patient_name} (File No: {self.file_number or 'N/A'})",
+                'quantity': 1.0,
+                'price_unit': self.consultation_fee,
+            }))
+
+        # 2. Add Medication lines if they exist
+        for line in self.medication_line_ids:
+            invoice_line_vals.append((0, 0, {
+                'name': f"Prescription: {line.product_id.name} - Qty: {line.quantity} ({line.dosage or ''})",
+                'quantity': line.quantity,
+                'price_unit': line.product_id.unit_price or 0.0,
+            }))
+
+        if not invoice_line_vals:
+            raise UserError("Cannot generate a bill with 0 lines (both consultation fee and prescription lines are empty).")
+
+        # Make sure Ghana Cedis (GHS) currency is active and set
+        ghs = self.env['res.currency'].search([('name', '=', 'GHS')], limit=1)
+        currency = ghs if ghs else self.env.user.company_id.currency_id
+
+        invoice_vals = {
+            'move_type': 'out_invoice',
+            'partner_id': partner.id,
+            'currency_id': currency.id,
+            'invoice_origin': self.patient_name or '',
+            'invoice_line_ids': invoice_line_vals,
+        }
+        
+        invoice = self.env['account.move'].create(invoice_vals)
+        self.invoice_id = invoice.id
+        return self.action_view_company_bill()
+
+    def action_view_company_bill(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Consultation Bill/Invoice',
+            'res_model': 'account.move',
+            'view_mode': 'form',
+            'res_id': self.invoice_id.id,
+            'target': 'current',
+        }
+
+    # ---------------------------------------------------------
     # WORKFLOW STATE
     # ---------------------------------------------------------
     state = fields.Selection([
@@ -255,10 +351,30 @@ class MedConsultation(models.Model):
             self.nationality = self.patient_id.nationality
             self.occupation = self.patient_id.occupation
             self.employer = self.patient_id.employer
+            self.company_name = self.patient_id.company_name
+            self.department = self.patient_id.department
+            if self.patient_id.company_name or self.patient_id.employer:
+                self.bill_to = 'company'
+                search_name = self.patient_id.company_name or self.patient_id.employer
+                company_partner = self.env['res.partner'].search([
+                    ('name', '=ilike', search_name),
+                    ('is_company', '=', True)
+                ], limit=1)
+                if company_partner:
+                    self.sponsor_company_id = company_partner.id
+                else:
+                    self.sponsor_company_id = False
+            else:
+                self.bill_to = 'individual'
+                self.sponsor_company_id = False
         else:
             self.nationality = False
             self.occupation = False
             self.employer = False
+            self.company_name = False
+            self.department = False
+            self.bill_to = 'individual'
+            self.sponsor_company_id = False
 
     # ---------------------------------------------------------
     # CREATE / WRITE OVERRIDES

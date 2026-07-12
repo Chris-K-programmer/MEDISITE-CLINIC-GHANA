@@ -92,10 +92,20 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row mb-3">
                                         <div class="col-12 med_field_group">
                                             <label for="employer" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">EMPLOYER</label>
                                             <div class="med_field_value fw-bold"><field name="employer" nolabel="1"/></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 med_field_group">
+                                            <label for="company_name" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">COMPANY NAME</label>
+                                            <div class="med_field_value fw-bold"><field name="company_name" nolabel="1"/></div>
+                                        </div>
+                                        <div class="col-6 med_field_group">
+                                            <label for="department" class="med_field_label text-muted text-uppercase" style="font-size: 0.7rem; font-weight: 600;">DEPARTMENT</label>
+                                            <div class="med_field_value fw-bold"><field name="department" nolabel="1"/></div>
                                         </div>
                                     </div>
                                 </div>
