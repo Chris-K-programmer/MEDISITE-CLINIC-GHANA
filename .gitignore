@@ -1,0 +1,7 @@
+*.pyc
+__pycache__/
+.idea/
+.vscode/
+*.swp
+*~
+.9router/

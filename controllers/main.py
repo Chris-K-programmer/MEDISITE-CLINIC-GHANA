@@ -5,14 +5,14 @@ from odoo.http import request
 
 class MedisiteHome(Home):
 
-    @http.route('/', type='http', auth='none')
+    @http.route('/', type='http', auth='public')
     def index(self, s_action=None, db=None, **kw):
         """Override root route: show homepage if not logged in."""
         if request.session.uid:
             return super().index(s_action=s_action, db=db, **kw)
         return request.redirect('/web/login')
 
-    @http.route('/web/login', type='http', auth='none', readonly=False)
+    @http.route('/web/login', type='http', auth='public', readonly=False)
     def web_login(self, redirect=None, **kw):
         """Override login to use our custom homepage template."""
         import logging
@@ -24,6 +24,14 @@ class MedisiteHome(Home):
         
         # If login was successful, the parent already redirects
         if request.params.get('login_success'):
+            return response
+
+        # Check if the login is for other portals (Edupass or SHS)
+        redirect_url = redirect or request.params.get('redirect') or ''
+        referrer = request.httprequest.referrer or ''
+        is_other_portal = any(path in redirect_url or path in referrer for path in ['edupass', 'shs', 'my/'])
+
+        if is_other_portal:
             return response
 
         # For GET requests (showing login page), render our custom template

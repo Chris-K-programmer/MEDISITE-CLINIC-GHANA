@@ -41,7 +41,7 @@
                                 <p>
                                     <strong>Date:</strong> <t t-esc="doc.date.strftime('%d-%m-%Y')"/><br/>
                                     <strong>HCP:</strong> <t t-esc="doc.treating_hcp_id.name"/><br/>
-                                    <strong>Prescription Date:</strong> <t t-esc="doc.prescription_date" t-options='{"widget": "datetime"}'/>
+                                    <strong>Prescription Date:</strong> <t t-esc="doc.date_signed" t-options='{"widget": "datetime"}'/>
                                 </p>
                             </div>
                         </div>

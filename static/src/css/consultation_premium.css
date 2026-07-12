@@ -1,69 +1,451 @@
-/* STABLE PREMIUM CONSULTATION STYLES (ODOO 19 COMPATIBLE) */
+/* ================================================================
+   MEDISITE CONSULTATION FORM — PREMIUM DESIGN (Odoo 19)
+   ================================================================ */
 
-.o_med_consultation_redesign {
-    .o_form_sheet {
-        background-color: #f8fafc !important;
-        border: none !important;
-        box-shadow: none !important;
-        max-width: 100% !important;
-        padding: 20px !important;
-    }
+/* ── Page Background ─────────────────────────────────────────── */
+.o_med_consultation_redesign .o_form_sheet {
+    background: linear-gradient(160deg, #f0f4ff 0%, #f8fafc 50%, #f0fdf4 100%) !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    padding: 20px !important;
+}
 
-    /* Hero Header */
-    .card {
-        border-radius: 15px;
-        transition: transform 0.2s ease-in-out;
-    }
+/* ── Animated Hero Header Card ───────────────────────────────── */
+.o_med_consultation_redesign .med_consult_hero {
+    position: relative;
+    border-radius: 20px !important;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0b3d91 0%, #1a56c4 40%, #0f9a8e 100%) !important;
+    box-shadow: 0 8px 32px rgba(11, 61, 145, 0.25) !important;
+    border: none !important;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
 
-    .med_consult_stepper {
-        border-radius: 12px;
-        font-size: 0.9rem;
-    }
+.o_med_consultation_redesign .med_consult_hero:hover {
+    box-shadow: 0 16px 48px rgba(11, 61, 145, 0.35) !important;
+    transform: translateY(-2px);
+}
 
-    /* Field Styling */
-    .o_field_widget {
-        margin-bottom: 0px !important;
-    }
+/* Moving shimmer animation across the header */
+.o_med_consultation_redesign .med_consult_hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.12) 50%,
+        transparent 70%
+    );
+    animation: consult_shimmer 4s infinite linear;
+    pointer-events: none;
+}
 
-    .form-control {
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 10px;
-    }
+@keyframes consult_shimmer {
+    0%   { left: -60%; }
+    100% { left: 110%; }
+}
 
-    .form-control:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
+/* Decorative floating orb in hero */
+.o_med_consultation_redesign .med_consult_hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
 
-    /* Vitals & Labs sidebar */
-    .card-header {
-        background-color: transparent !important;
-        border-bottom: 1px solid #f1f5f9 !important;
-        padding-bottom: 10px !important;
-    }
+/* ── Hero Card Body Text ─────────────────────────────────────── */
+.o_med_consultation_redesign .med_consult_hero .card-body {
+    position: relative;
+    z-index: 1;
+    padding: 24px !important;
+}
 
-    .badge {
-        font-weight: 600;
-        letter-spacing: 0.3px;
-    }
+/* Patient name & file number on hero */
+.o_med_consultation_redesign .med_consult_hero .o_field_widget,
+.o_med_consultation_redesign .med_consult_hero input,
+.o_med_consultation_redesign .med_consult_hero .o_field_char,
+.o_med_consultation_redesign .med_consult_hero h4 {
+    color: #ffffff !important;
+}
 
-    /* Notebook adjustments */
-    .nav-tabs {
-        border-bottom: 2px solid #f1f5f9;
-        margin-bottom: 20px;
-    }
+.o_med_consultation_redesign .med_consult_hero .text-muted {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
 
-    .nav-link {
-        font-weight: 700;
-        color: #64748b;
-        border: none !important;
-        padding: 12px 20px !important;
-    }
+.o_med_consultation_redesign .med_consult_hero .border-start {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
 
-    .nav-link.active {
-        color: #3b82f6 !important;
-        background: transparent !important;
-        border-bottom: 3px solid #3b82f6 !important;
-    }
+/* ── Patient Badge (fix opaque, hard-to-read) ────────────────── */
+.o_med_consultation_redesign .med_consult_hero .badge {
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    padding: 6px 14px !important;
+    border-radius: 20px !important;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(4px);
+}
+
+/* "Patient" blue badge → crisp white on solid blue */
+.o_med_consultation_redesign .med_consult_hero .badge.bg-primary {
+    background: rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* "Age" info badge → crisp white on teal */
+.o_med_consultation_redesign .med_consult_hero .badge.bg-info {
+    background: rgba(16, 185, 129, 0.85) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Fix fields inside badges (age integer field) */
+.o_med_consultation_redesign .med_consult_hero .badge .o_field_widget,
+.o_med_consultation_redesign .med_consult_hero .badge .o_field_integer {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* ── Consultation Date Box (top-right) ───────────────────────── */
+.o_med_consultation_redesign .med_consult_hero .med_consult_date_box {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 12px 18px !important;
+    text-align: center;
+    backdrop-filter: blur(6px);
+}
+
+.o_med_consultation_redesign .med_consult_hero .med_consult_date_box .small {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.o_med_consultation_redesign .med_consult_hero .med_consult_date_box .o_field_widget {
+    color: #ffffff !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+}
+
+/* ── Demographic Chips (nationality, occupation, employer) ────── */
+.o_med_consultation_redesign .med_demo_chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.o_med_consultation_redesign .med_demo_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    backdrop-filter: blur(4px);
+    animation: chip_fadein 0.4s ease forwards;
+    opacity: 0;
+}
+
+.o_med_consultation_redesign .med_demo_chip:nth-child(1) { animation-delay: 0.1s; }
+.o_med_consultation_redesign .med_demo_chip:nth-child(2) { animation-delay: 0.2s; }
+.o_med_consultation_redesign .med_demo_chip:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes chip_fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.o_med_consultation_redesign .med_demo_chip .small {
+    color: rgba(255, 255, 255, 0.65) !important;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.o_med_consultation_redesign .med_demo_chip .o_field_widget,
+.o_med_consultation_redesign .med_demo_chip .o_field_char {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+}
+
+/* ── Premium Stepper ─────────────────────────────────────────── */
+.o_med_consultation_redesign .med_stepper_wrap {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 50%, #f0fdf4 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px 28px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    animation: stepper_slidein 0.5s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Subtle shimmer on the stepper background */
+.o_med_consultation_redesign .med_stepper_wrap::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59,130,246,0.04), transparent);
+    animation: stepper_bg_shimmer 6s infinite linear;
+    pointer-events: none;
+}
+@keyframes stepper_bg_shimmer {
+    0%   { left: -100%; }
+    100% { left: 200%; }
+}
+
+.o_med_consultation_redesign .med_stepper_track {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+/* ─ Individual step ─ */
+.o_med_consultation_redesign .med_step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 120px;
+    flex-shrink: 0;
+    animation: step_fadein 0.4s ease forwards;
+    opacity: 0;
+}
+.o_med_consultation_redesign .med_step:nth-child(1) { animation-delay: 0.05s; }
+.o_med_consultation_redesign .med_step:nth-child(4),
+.o_med_consultation_redesign .med_step:nth-child(5),
+.o_med_consultation_redesign .med_step:nth-child(6) { animation-delay: 0.15s; }
+.o_med_consultation_redesign .med_step:nth-child(8),
+.o_med_consultation_redesign .med_step:nth-child(9),
+.o_med_consultation_redesign .med_step:nth-child(10) { animation-delay: 0.25s; }
+
+@keyframes step_fadein {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─ Step icon (shared) ─ */
+.o_med_consultation_redesign .med_step_icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.o_med_consultation_redesign .med_step_icon:hover {
+    transform: scale(1.1);
+}
+
+/* Active icon → blue gradient + pulse glow */
+.o_med_consultation_redesign .med_step_icon_active {
+    background: linear-gradient(135deg, #0b3d91 0%, #3b82f6 100%);
+    color: #ffffff;
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+    animation: icon_pulse 2s infinite ease-in-out;
+}
+@keyframes icon_pulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3); }
+    50%      { box-shadow: 0 4px 24px rgba(59, 130, 246, 0.55), 0 0 0 8px rgba(59, 130, 246, 0.1); }
+}
+
+/* Lab active icon → teal gradient */
+.o_med_consultation_redesign .med_step_icon_lab {
+    background: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%);
+    color: #ffffff;
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.5);
+    animation: icon_pulse_lab 2s infinite ease-in-out;
+}
+@keyframes icon_pulse_lab {
+    0%, 100% { box-shadow: 0 4px 16px rgba(45, 212, 191, 0.3); }
+    50%      { box-shadow: 0 4px 24px rgba(45, 212, 191, 0.55), 0 0 0 8px rgba(45, 212, 191, 0.1); }
+}
+
+/* Completed icon → green gradient + checkmark */
+.o_med_consultation_redesign .med_step_icon_done {
+    background: linear-gradient(135deg, #059669 0%, #34d399 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
+/* Pending icon → light grey outline */
+.o_med_consultation_redesign .med_step_icon_pending {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: 2px dashed #cbd5e1;
+}
+
+/* ─ Step labels ─ */
+.o_med_consultation_redesign .med_step_label {
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+.o_med_consultation_redesign .med_step_pending .med_step_label {
+    color: #94a3b8;
+}
+
+.o_med_consultation_redesign .med_step_sub {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.o_med_consultation_redesign .med_step_active .med_step_sub {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.o_med_consultation_redesign .med_step_done .med_step_sub {
+    color: #059669;
+    font-weight: 600;
+}
+
+/* ─ Connectors ─ */
+.o_med_consultation_redesign .med_step_connector {
+    flex: 1;
+    height: 3px;
+    border-radius: 3px;
+    margin: 0 8px;
+    margin-bottom: 24px; /* vertically center with icon */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Completed connector → animated gradient fill */
+.o_med_consultation_redesign .med_connector_done {
+    background: linear-gradient(90deg, #059669 0%, #34d399 50%, #3b82f6 100%);
+    background-size: 200% 100%;
+    animation: connector_flow 2s ease infinite;
+}
+@keyframes connector_flow {
+    0%   { background-position: 100% 0; }
+    100% { background-position: 0% 0; }
+}
+
+/* Pending connector → dashed grey */
+.o_med_consultation_redesign .med_connector_pending {
+    background: transparent;
+    border-top: 2px dashed #cbd5e1;
+    height: 0;
+}
+
+@keyframes stepper_slidein {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── General card transitions ────────────────────────────────── */
+.o_med_consultation_redesign .card {
+    border-radius: 15px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.o_med_consultation_redesign .card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ── Form control fields ─────────────────────────────────────── */
+.o_med_consultation_redesign .o_field_widget {
+    margin-bottom: 0px !important;
+}
+
+.o_med_consultation_redesign .form-control {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.o_med_consultation_redesign .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ── Sidebar cards ───────────────────────────────────────────── */
+.o_med_consultation_redesign .card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding-bottom: 10px !important;
+}
+
+/* ── Notebook tabs ───────────────────────────────────────────── */
+.o_med_consultation_redesign .nav-tabs {
+    border-bottom: 2px solid #f1f5f9;
+    margin-bottom: 20px;
+}
+
+.o_med_consultation_redesign .nav-link {
+    font-weight: 700;
+    color: #64748b;
+    border: none !important;
+    padding: 12px 20px !important;
+    transition: color 0.2s ease;
+}
+
+.o_med_consultation_redesign .nav-link.active {
+    color: #3b82f6 !important;
+    background: transparent !important;
+    border-bottom: 3px solid #3b82f6 !important;
+}
+
+/* ── SOAP Clinical Note Cards ───────────────────────────────── */
+.o_med_consultation_redesign .med_soap_card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    border: 1px solid transparent;
+}
+
+.o_med_consultation_redesign .med_soap_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.o_med_consultation_redesign .med_soap_card:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.o_med_consultation_redesign .med_soap_card textarea,
+.o_med_consultation_redesign .med_soap_card .o_field_text textarea {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-radius: 6px !important;
+    min-height: 80px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.o_med_consultation_redesign .med_soap_card textarea:focus,
+.o_med_consultation_redesign .med_soap_card .o_field_text textarea:focus {
+    background: #ffffff !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
 }

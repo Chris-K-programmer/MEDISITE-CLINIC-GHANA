@@ -171,6 +171,34 @@ class MedConsultation(models.Model):
     sys_derm = fields.Text()
     sys_other = fields.Text()
 
+    # ---------------------------------------------------------
+    # SOAP / CLINICAL NOTES (Doctor)
+    # ---------------------------------------------------------
+    soap_subjective = fields.Text(
+        string='Subjective',
+        help='Patient-reported symptoms, concerns, and history of present illness'
+    )
+    soap_objective = fields.Text(
+        string='Objective',
+        help='Clinician observations, examination findings, vitals, lab results'
+    )
+    soap_assessment = fields.Text(
+        string='Assessment',
+        help='Clinical assessment, differential diagnosis, and clinical impression'
+    )
+    soap_plan = fields.Text(
+        string='Plan',
+        help='Treatment plan, medications, referrals, and follow-up instructions'
+    )
+    soap_education = fields.Text(
+        string='Education',
+        help='Patient education about condition, medication, lifestyle changes'
+    )
+    soap_follow_up = fields.Text(
+        string='Follow-Up Consultation',
+        help='Follow-up notes, expected outcomes, and next visit plan'
+    )
+
     working_diagnosis = fields.Text()
     icd10_id = fields.Many2one(
         'med.icd10',
@@ -216,6 +244,21 @@ class MedConsultation(models.Model):
         ('lab', 'Lab Technician'),
         ('done', 'Completed'),
     ], default='nurse', tracking=True)
+
+    # ---------------------------------------------------------
+    # ONCHANGE
+    # ---------------------------------------------------------
+    @api.onchange('patient_id')
+    def _onchange_patient_id(self):
+        """Auto-populate demographic fields from the selected patient."""
+        if self.patient_id:
+            self.nationality = self.patient_id.nationality
+            self.occupation = self.patient_id.occupation
+            self.employer = self.patient_id.employer
+        else:
+            self.nationality = False
+            self.occupation = False
+            self.employer = False
 
     # ---------------------------------------------------------
     # CREATE / WRITE OVERRIDES
@@ -297,12 +340,46 @@ class MedConsultation(models.Model):
             if rec.state != 'doctor':
                 raise UserError("Only Doctor can complete consultation.")
 
-            if rec.pharmacy_order_id and rec.pharmacy_order_id.state != 'paid':
-                raise UserError("Pharmacy payment must be completed before closing consultation.")
+            # Auto-link the treating HCP (staff) based on logged-in user
+            staff = self.env['med.staff'].search([('user_id', '=', self.env.user.id)], limit=1)
+            if staff:
+                rec.treating_hcp_id = staff.id
 
             rec.signature_user = self.env.user
             rec.date_signed = fields.Datetime.now()
             rec._change_state('done', 'Consultation completed and signed')
+
+            # Auto-create pharmacy order on completion if medications are prescribed
+            if not rec.pharmacy_order_id:
+                rec._create_pharmacy_order_automatically()
+
+    def _create_pharmacy_order_automatically(self):
+        self.ensure_one()
+        order_vals = {
+            'consultation_id': self.id,
+            'patient_id': self.patient_id.id,
+        }
+        order_lines = []
+        
+        # 1. Populate from tabular medication lines if available
+        if self.medication_line_ids:
+            for line in self.medication_line_ids:
+                order_lines.append((0, 0, {
+                    'product_id': line.product_id.id,
+                    'quantity': line.quantity,
+                    'unit_price': line.product_id.unit_price,
+                }))
+        
+        # 2. Fall back to raw text medications split-line parser
+        if not order_lines and self.medication:
+            parsed = self._prepare_pharmacy_lines_from_medication()
+            if parsed:
+                order_lines = parsed
+
+        if order_lines:
+            order_vals['line_ids'] = order_lines
+            order = self.env['med.pharmacy.order'].create(order_vals)
+            self.pharmacy_order_id = order.id
 
     def action_send_to_pharmacy(self):
         self.ensure_one()
@@ -323,9 +400,22 @@ class MedConsultation(models.Model):
             'patient_id': self.patient_id.id,
         }
 
-        lines = self._prepare_pharmacy_lines_from_medication()
-        if lines:
-            order_vals['line_ids'] = lines
+        # Use same dual population logic
+        order_lines = []
+        if self.medication_line_ids:
+            for line in self.medication_line_ids:
+                order_lines.append((0, 0, {
+                    'product_id': line.product_id.id,
+                    'quantity': line.quantity,
+                    'unit_price': line.product_id.unit_price,
+                }))
+        if not order_lines and self.medication:
+            parsed = self._prepare_pharmacy_lines_from_medication()
+            if parsed:
+                order_lines = parsed
+
+        if order_lines:
+            order_vals['line_ids'] = order_lines
 
         order = self.env['med.pharmacy.order'].create(order_vals)
         self.pharmacy_order_id = order.id
@@ -377,6 +467,41 @@ class MedConsultation(models.Model):
             new=new_state,
             note=note
         )
+        # ── Bus notification → triggers frontend TTS & sound alert ──────────
+        patient_name = self.patient_name or 'Patient'
+        notification_map = {
+            'doctor': {
+                'group_ref': 'medisite_clinic.group_med_doctor',
+                'role': 'doctor',
+                'message': f"Attention Doctor. Patient {patient_name} is ready for your consultation.",
+            },
+            'lab': {
+                'group_ref': 'medisite_clinic.group_med_lab',
+                'role': 'lab',
+                'message': f"Lab alert. Results are required for patient {patient_name}. Please proceed.",
+            },
+            'nurse': {
+                'group_ref': 'medisite_clinic.group_med_nurse',
+                'role': 'nurse',
+                'message': f"Nurse station. Patient {patient_name} has been returned from the lab. Doctor review pending.",
+            },
+            'done': {
+                'group_ref': 'medisite_clinic.group_med_nurse',
+                'role': 'nurse',
+                'message': f"Consultation for patient {patient_name} is now complete.",
+            },
+        }
+        notif = notification_map.get(new_state)
+        if notif:
+            try:
+                target_group = self.env.ref(notif['group_ref'])
+                self.env['bus.bus']._sendone(target_group, 'medisite_notification', {
+                    'role': notif['role'],
+                    'patient_name': patient_name,
+                    'message': notif['message'],
+                })
+            except Exception:
+                pass  # Never block a clinical state change due to notification failure
 
     def _get_user_role(self):
         user = self.env.user

@@ -1,7 +1,49 @@
-.o_list_view .o_list_avatar img {
-    width: 32px !important;
-    height: 32px !important;
-    object-fit: cover;
-    border-radius: 4px;
+/* ============================================================
+   Patient Profile Photo — Circular, Professional
+   ============================================================ */
+
+/* --- Form view: large circular avatar with ring & shadow --- */
+.med_patient_photo_wrap {
+    display: inline-block;
+    position: relative;
+    padding: 4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0b3d91 0%, #10b981 100%);
+    box-shadow: 0 6px 24px rgba(11, 61, 145, 0.25);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
+.med_patient_photo_wrap:hover {
+    box-shadow: 0 10px 32px rgba(11, 61, 145, 0.35);
+    transform: translateY(-2px);
+}
+
+/* The actual image inside the wrapper */
+.med_patient_photo_wrap .med_patient_photo img,
+.med_patient_photo_wrap .med_patient_photo .o_field_image img {
+    width: 200px !important;
+    height: 200px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 4px solid #ffffff !important;
+    display: block;
+}
+
+/* Fallback when no photo is uploaded */
+.med_patient_photo_wrap .med_patient_photo .o_field_image {
+    width: 200px !important;
+    height: 200px !important;
+    border-radius: 50% !important;
+    overflow: hidden;
+    border: 4px solid #ffffff;
+}
+
+/* --- List view: smaller circular avatar --- */
+.o_list_view .o_list_avatar img {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: cover;
+    border-radius: 50% !important;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}

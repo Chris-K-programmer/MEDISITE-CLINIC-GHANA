@@ -34,73 +34,160 @@
                     <button name="action_send_to_doctor_from_lab" type="object" string="Return to Doctor" class="btn-outline-primary" groups="medisite_clinic.group_med_lab" invisible="state != 'lab'"/>
                     <button name="action_done" type="object" string="Complete Consultation" class="btn-primary fw-bold" groups="medisite_clinic.group_med_doctor" invisible="state != 'doctor'"/>
                     
+                    <!-- Print Prescription button once consultation is completed -->
+                    <button name="%(medisite_clinic.action_report_med_prescription)d" string="Print Prescription" type="action" class="btn-success fw-bold" invisible="state != 'done'"/>
+                    
+                    <field name="pharmacy_order_id" invisible="1"/>
+
                     <field name="state" widget="statusbar" statusbar_visible="nurse,doctor,lab,done"/>
                 </header>
                 
                 <sheet>
-                    <!-- STEPPER -->
-                    <div class="med_consult_stepper mb-4 d-flex justify-content-between align-items-center bg-light p-3 rounded-3 shadow-sm border">
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-weight: bold;">1</div>
-                            <div class="fw-bold text-primary">Nurse Assessment</div>
-                        </div>
-                        <div class="text-muted"><i class="fa fa-chevron-right"/></div>
-                        <div class="d-flex align-items-center gap-2 opacity-50" invisible="state == 'nurse'">
-                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">2</div>
-                            <div>Doctor Consultation</div>
-                        </div>
-                        <div class="d-flex align-items-center gap-2" invisible="state == 'nurse'">
-                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-weight: bold;">2</div>
-                            <div class="fw-bold text-primary">Doctor Consultation</div>
-                        </div>
-                        <div class="text-muted"><i class="fa fa-chevron-right"/></div>
-                        <div class="d-flex align-items-center gap-2 opacity-50">
-                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">3</div>
-                            <div>Lab/Pharmacy</div>
+                    <!-- DYNAMIC STEPPER (PREMIUM) -->
+                    <div class="med_stepper_wrap mb-4">
+                        <div class="med_stepper_track">
+
+                            <!-- ── STEP 1: Nurse ─────────────── -->
+                            <!-- Active (nurse stage) -->
+                            <div class="med_step med_step_active" invisible="state != 'nurse'">
+                                <div class="med_step_icon med_step_icon_active">
+                                    <i class="fa fa-stethoscope"/>
+                                </div>
+                                <div class="med_step_label">Nurse Assessment</div>
+                                <div class="med_step_sub">Recording vitals</div>
+                            </div>
+                            <!-- Completed (past nurse) -->
+                            <div class="med_step med_step_done" invisible="state == 'nurse'">
+                                <div class="med_step_icon med_step_icon_done">
+                                    <i class="fa fa-check"/>
+                                </div>
+                                <div class="med_step_label">Nurse Assessment</div>
+                                <div class="med_step_sub">Completed</div>
+                            </div>
+
+                            <!-- Connector 1→2 -->
+                            <div class="med_step_connector med_connector_done" invisible="state == 'nurse'"/>
+                            <div class="med_step_connector med_connector_pending" invisible="state != 'nurse'"/>
+
+                            <!-- ── STEP 2: Doctor ────────────── -->
+                            <!-- Active -->
+                            <div class="med_step med_step_active" invisible="state != 'doctor'">
+                                <div class="med_step_icon med_step_icon_active">
+                                    <i class="fa fa-user-md"/>
+                                </div>
+                                <div class="med_step_label">Doctor Review</div>
+                                <div class="med_step_sub">In consultation</div>
+                            </div>
+                            <!-- Completed -->
+                            <div class="med_step med_step_done" invisible="state in ['nurse', 'doctor']">
+                                <div class="med_step_icon med_step_icon_done">
+                                    <i class="fa fa-check"/>
+                                </div>
+                                <div class="med_step_label">Doctor Review</div>
+                                <div class="med_step_sub">Completed</div>
+                            </div>
+                            <!-- Inactive -->
+                            <div class="med_step med_step_pending" invisible="state != 'nurse'">
+                                <div class="med_step_icon med_step_icon_pending">
+                                    <i class="fa fa-user-md"/>
+                                </div>
+                                <div class="med_step_label">Doctor Review</div>
+                                <div class="med_step_sub">Waiting</div>
+                            </div>
+
+                            <!-- Connector 2→3 -->
+                            <div class="med_step_connector med_connector_done" invisible="state in ['nurse', 'doctor']"/>
+                            <div class="med_step_connector med_connector_pending" invisible="state not in ['nurse', 'doctor']"/>
+
+                            <!-- ── STEP 3: Lab ───────────────── -->
+                            <!-- Active -->
+                            <div class="med_step med_step_active" invisible="state != 'lab'">
+                                <div class="med_step_icon med_step_icon_lab">
+                                    <i class="fa fa-flask"/>
+                                </div>
+                                <div class="med_step_label">Lab Investigation</div>
+                                <div class="med_step_sub">Testing in progress</div>
+                            </div>
+                            <!-- Completed (done) -->
+                            <div class="med_step med_step_done" invisible="state != 'done'">
+                                <div class="med_step_icon med_step_icon_done">
+                                    <i class="fa fa-check"/>
+                                </div>
+                                <div class="med_step_label">Completed</div>
+                                <div class="med_step_sub">All steps done</div>
+                            </div>
+                            <!-- Inactive -->
+                            <div class="med_step med_step_pending" invisible="state in ['lab', 'done']">
+                                <div class="med_step_icon med_step_icon_pending">
+                                    <i class="fa fa-flask"/>
+                                </div>
+                                <div class="med_step_label">Lab / Finish</div>
+                                <div class="med_step_sub">Waiting</div>
+                            </div>
+
                         </div>
                     </div>
 
                     <!-- PATIENT HERO HEADER -->
-                    <div class="card mb-4 border-0 shadow-sm overflow-hidden" style="border-radius: 15px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+                    <div class="card mb-4 border-0 med_consult_hero">
                         <div class="card-body p-4">
                             <div class="row align-items-center">
                                 <div class="col-md-2 text-center">
-                                    <field name="patient_image" widget="image" class="rounded-circle shadow-sm border border-3 border-white"/>
+                                    <div class="med_patient_photo_wrap">
+                                        <field name="patient_image" widget="image" class="med_patient_photo" options="{'size':[200,200]}"/>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 border-start ps-4">
+                                <div class="col-md-7 border-start ps-4">
                                     <div class="mb-2">
-                                        <label for="patient_id" class="small fw-bold text-muted text-uppercase mb-1 d-block">Select Patient</label>
-                                        <field name="patient_id" placeholder="Search Patient by Name or File Number..." options="{'no_create': True}" class="fs-4 fw-bold text-dark w-100"/>
+                                        <label for="patient_id" class="small fw-bold text-uppercase mb-1 d-block" style="color: rgba(255,255,255,0.65); letter-spacing:1px;">Select Patient</label>
+                                        <field name="patient_id" placeholder="Search Patient by Name or File Number..." options="{'no_create': True}" class="fs-4 fw-bold w-100"/>
                                     </div>
-                                    <h4 class="text-muted mb-3">File Number: <field name="file_number" readonly="1"/></h4>
-                                    <div class="d-flex gap-3 mb-2">
-                                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"><i class="fa fa-user me-1"/> Patient</span>
-                                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 rounded-pill"><i class="fa fa-birthday-cake me-1"/> <field name="age" readonly="1"/> Years</span>
+                                    <div class="mb-3 fw-bold" style="color: rgba(255,255,255,0.85);">
+                                        File No: <field name="file_number" readonly="1"/>
                                     </div>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-4">
-                                            <label for="nationality" class="small text-muted mb-0">Nationality</label>
-                                            <field name="nationality" class="d-block border-0 bg-transparent p-0 fw-bold text-dark"/>
+                                    <div class="d-flex gap-3 mb-3">
+                                        <span class="badge bg-primary">
+                                            <i class="fa fa-user me-1"/>Patient
+                                        </span>
+                                        <span class="badge bg-info">
+                                            <i class="fa fa-birthday-cake me-1"/>
+                                            <field name="age" readonly="1"/> Years
+                                        </span>
+                                    </div>
+                                    <div class="med_demo_chips">
+                                        <div class="med_demo_chip" invisible="not nationality">
+                                            <i class="fa fa-globe" style="color:rgba(255,255,255,0.6); font-size:0.75rem;"/>
+                                            <div>
+                                                <span class="small">Nationality</span>
+                                                <field name="nationality" class="d-block" readonly="1"/>
+                                            </div>
                                         </div>
-                                        <div class="col-4">
-                                            <label for="occupation" class="small text-muted mb-0">Occupation</label>
-                                            <field name="occupation" class="d-block border-0 bg-transparent p-0 fw-bold text-dark"/>
+                                        <div class="med_demo_chip" invisible="not occupation">
+                                            <i class="fa fa-briefcase" style="color:rgba(255,255,255,0.6); font-size:0.75rem;"/>
+                                            <div>
+                                                <span class="small">Occupation</span>
+                                                <field name="occupation" class="d-block" readonly="1"/>
+                                            </div>
                                         </div>
-                                        <div class="col-4">
-                                            <label for="employer" class="small text-muted mb-0">Employer</label>
-                                            <field name="employer" class="d-block border-0 bg-transparent p-0 fw-bold text-dark"/>
+                                        <div class="med_demo_chip" invisible="not employer">
+                                            <i class="fa fa-building" style="color:rgba(255,255,255,0.6); font-size:0.75rem;"/>
+                                            <div>
+                                                <span class="small">Employer</span>
+                                                <field name="employer" class="d-block" readonly="1"/>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <div class="p-3 bg-white rounded-3 shadow-sm d-inline-block border">
-                                        <div class="small fw-bold text-uppercase text-muted mb-1">Consultation Date</div>
-                                        <div class="fs-4 fw-bold text-primary"><field name="date" readonly="1"/></div>
+                                <div class="col-md-3 text-end">
+                                    <div class="med_consult_date_box d-inline-block">
+                                        <div class="small">Consultation Date</div>
+                                        <div class="mt-1"><field name="date" readonly="1"/></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
 
                     <div class="row">
                         <!-- LEFT COLUMN: Main Clinical Workflow -->
@@ -246,6 +333,67 @@
                                         </div>
                                     </div>
 
+                                    <!-- SOAP CLINICAL NOTES -->
+                                    <h5 class="fw-bold mt-5 mb-3 border-bottom pb-2" style="color: #0b3d91;">
+                                        <i class="fa fa-file-text-o me-2"/>Clinical Consultation Notes (SOAP)
+                                    </h5>
+                                    <div class="row g-3 mb-4">
+                                        <!-- Subjective -->
+                                        <div class="col-md-6">
+                                            <div class="med_soap_card p-3 rounded-3" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6;">
+                                                <label for="soap_subjective" class="fw-bold small text-uppercase mb-2 d-block" style="color: #1d4ed8; letter-spacing: 0.5px;">
+                                                    <i class="fa fa-comment-o me-1"/>Subjective
+                                                </label>
+                                                <field name="soap_subjective" nolabel="1" placeholder="Patient-reported symptoms, concerns, and history of present illness..." readonly="state == 'done'" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <!-- Objective -->
+                                        <div class="col-md-6">
+                                            <div class="med_soap_card p-3 rounded-3" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 4px solid #22c55e;">
+                                                <label for="soap_objective" class="fw-bold small text-uppercase mb-2 d-block" style="color: #16a34a; letter-spacing: 0.5px;">
+                                                    <i class="fa fa-eye me-1"/>Objective
+                                                </label>
+                                                <field name="soap_objective" nolabel="1" placeholder="Clinical observations, examination findings, vitals, lab results..." readonly="state == 'done'" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <!-- Assessment -->
+                                        <div class="col-md-6">
+                                            <div class="med_soap_card p-3 rounded-3" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 4px solid #f59e0b;">
+                                                <label for="soap_assessment" class="fw-bold small text-uppercase mb-2 d-block" style="color: #d97706; letter-spacing: 0.5px;">
+                                                    <i class="fa fa-medkit me-1"/>Assessment
+                                                </label>
+                                                <field name="soap_assessment" nolabel="1" placeholder="Clinical impression, differential diagnosis, severity..." readonly="state == 'done'" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <!-- Plan -->
+                                        <div class="col-md-6">
+                                            <div class="med_soap_card p-3 rounded-3" style="background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); border-left: 4px solid #6366f1;">
+                                                <label for="soap_plan" class="fw-bold small text-uppercase mb-2 d-block" style="color: #4f46e5; letter-spacing: 0.5px;">
+                                                    <i class="fa fa-list-ol me-1"/>Plan
+                                                </label>
+                                                <field name="soap_plan" nolabel="1" placeholder="Treatment plan, medications, referrals, follow-up instructions..." readonly="state == 'done'" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <!-- Education -->
+                                        <div class="col-md-6">
+                                            <div class="med_soap_card p-3 rounded-3" style="background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); border-left: 4px solid #14b8a6;">
+                                                <label for="soap_education" class="fw-bold small text-uppercase mb-2 d-block" style="color: #0d9488; letter-spacing: 0.5px;">
+                                                    <i class="fa fa-graduation-cap me-1"/>Education
+                                                </label>
+                                                <field name="soap_education" nolabel="1" placeholder="Patient education about condition, medication, lifestyle changes..." readonly="state == 'done'" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <!-- Follow-Up Consultation -->
+                                        <div class="col-md-6">
+                                            <div class="med_soap_card p-3 rounded-3" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-left: 4px solid #475569;">
+                                                <label for="soap_follow_up" class="fw-bold small text-uppercase mb-2 d-block" style="color: #334155; letter-spacing: 0.5px;">
+                                                    <i class="fa fa-calendar-check-o me-1"/>Follow-Up Consultation
+                                                </label>
+                                                <field name="soap_follow_up" nolabel="1" placeholder="Follow-up notes, expected outcomes, next visit plan..." readonly="state == 'done'" class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <h5 class="fw-bold mt-5 mb-3 text-primary border-bottom pb-2">Diagnosis &amp; Decision</h5>
                                     <div class="row mb-4">
                                         <div class="col-md-8">
@@ -257,6 +405,24 @@
                                             <div class="d-flex">
                                                 <field name="icd10_id" nolabel="1" options="{'no_create': True}" class="flex-grow-1" readonly="state == 'done'"/>
                                                 <button name="action_search_icd" type="object" icon="fa-search" class="btn-primary ms-1"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- DIGITAL SIGNATURE PLACED DIRECTLY IN DIAGNOSIS & DECISION (ALWAYS VISIBLE) -->
+                                    <div class="row g-3 mb-4 bg-light p-3 rounded-3 shadow-sm border">
+                                        <div class="col-md-6">
+                                            <label for="signature" class="fw-bold small text-muted mb-2 d-block">Doctor's Digital Signature</label>
+                                            <field name="signature" widget="signature" readonly="state == 'done'" class="bg-white border rounded-2" style="max-width: 100%; height: 100px;"/>
+                                        </div>
+                                        <div class="col-md-6" invisible="not signature_user">
+                                            <div class="mb-2 mt-2">
+                                                <span class="small text-muted fw-bold d-block">Signed By:</span>
+                                                <field name="signature_user" class="fw-bold text-dark"/>
+                                            </div>
+                                            <div>
+                                                <span class="small text-muted fw-bold d-block">Date/Time Signed:</span>
+                                                <field name="date_signed" class="fw-bold text-dark"/>
                                             </div>
                                         </div>
                                     </div>
