@@ -134,7 +134,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-2 text-center">
                                     <div class="med_patient_photo_wrap">
-                                        <field name="patient_image" widget="image" class="med_patient_photo" options="{'size':[200,200]}"/>
+                                        <field name="patient_id" widget="image" options="{'preview_image': 'photo', 'size': [0, 200]}" readonly="1" class="med_patient_photo" nolabel="1"/>
                                     </div>
                                 </div>
                                 <div class="col-md-7 border-start ps-4">
@@ -427,7 +427,7 @@
                                     <div class="row g-3 mb-4 bg-light p-3 rounded-3 shadow-sm border">
                                         <div class="col-md-6">
                                             <label for="signature" class="fw-bold small text-muted mb-2 d-block">Doctor's Digital Signature</label>
-                                            <field name="signature" widget="signature" readonly="state == 'done'" class="bg-white border rounded-2" style="max-width: 100%; height: 100px;"/>
+                                            <field name="signature" widget="signature" readonly="state == 'done'" options="{'size': [0, 120]}"/>
                                         </div>
                                         <div class="col-md-6" invisible="not signature_user">
                                             <div class="mb-2 mt-2">

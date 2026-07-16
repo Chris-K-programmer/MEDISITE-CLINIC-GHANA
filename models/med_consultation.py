@@ -353,6 +353,9 @@ class MedConsultation(models.Model):
             self.employer = self.patient_id.employer
             self.company_name = self.patient_id.company_name
             self.department = self.patient_id.department
+            self.patient_image = self.patient_id.photo
+            self.gender = self.patient_id.gender
+            self.age = self.patient_id.age
             if self.patient_id.company_name or self.patient_id.employer:
                 self.bill_to = 'company'
                 search_name = self.patient_id.company_name or self.patient_id.employer
@@ -373,6 +376,9 @@ class MedConsultation(models.Model):
             self.employer = False
             self.company_name = False
             self.department = False
+            self.patient_image = False
+            self.gender = False
+            self.age = 0
             self.bill_to = 'individual'
             self.sponsor_company_id = False
 
